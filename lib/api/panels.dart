@@ -8,14 +8,16 @@ const String apiBaseUrl = "https://api.allanime.day/api";
 const String referer = "https://allmanga.to";
 const String agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0";
 
-void main() async {
+Future<List<String>> getChapterPagesUrls({
+  required String mangaId,
+  required String chapterString,
+}) async {
   final response = await getChapterPages(
-    mangaId: "bjKg6rj5rh539Wfey",
-    translationType: "sub",
-    chapterString: "1",
+    mangaId: mangaId,
+    chapterString: chapterString,
   );
   String urlBase = response.chapterPages.edges[0].pictureUrlHead;
-  print(response.chapterPages.edges[0].pictureUrls.map((pic) => urlBase+pic.url).toList());
+  return response.chapterPages.edges[0].pictureUrls.map((pic) => urlBase+pic.url).toList();
 }
 
 Future<ApiResponse> getChapterPages({

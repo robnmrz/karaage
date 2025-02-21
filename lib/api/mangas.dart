@@ -8,31 +8,15 @@ const String apiBaseUrl = "https://api.allanime.day/api";
 const String referer = "https://allmanga.to";
 const String agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0";
 
-Future<List<String>> getChapterPagesUrls({
-  required String mangaId,
-  required String chapterString,
-}) async {
-  final response = await getChapterPages(
-    mangaId: mangaId,
-    chapterString: chapterString,
-  );
-  String urlBase = response.chapterPages.edges[0].pictureUrlHead;
-  return response.chapterPages.edges[0].pictureUrls.map((pic) => urlBase+pic.url).toList();
-}
-
-Future<ChapterPagesResponse> getChapterPages({
-  required String mangaId,
-  required String chapterString,
+Future<MangaSearchResponse> searchMangas({
+  required String searchTerm,
   String translationType = "sub",
-  int limit = 10,
-  int offset = 0,
+  int limit = 26,
 }) async {
-  Uri apiUrl = generateChapterPagesUri(
-    mangaId: mangaId,
-    chapterString: chapterString,
+  Uri apiUrl = generateMangaSearchUri(
+    searchTerm: searchTerm,
     translationType: translationType,
     limit: limit,
-    offset: offset,
   );
   try {
     final response = await http.get(
@@ -43,37 +27,41 @@ Future<ChapterPagesResponse> getChapterPages({
       },
     );
     if (response.statusCode == 200) {
-      return ChapterPagesResponse.fromJson(jsonDecode(response.body));
+      return MangaSearchResponse.fromJson(jsonDecode(response.body));
     } else {
       print('Error: ${response.statusCode}');
-      return ChapterPagesResponse(rawData: {}, chapterPages: ChapterPages(edges: []));
+      return MangaSearchResponse(rawData: {}, mangas: Mangas(edges: []));
     }
   } catch (e) {
     print('Exception: $e');
-    return ChapterPagesResponse(rawData: {}, chapterPages: ChapterPages(edges: []));
+    return MangaSearchResponse(rawData: {}, mangas: Mangas(edges: []));
   }
 }
 
-Uri generateChapterPagesUri({
-  required String mangaId,
+Uri generateMangaSearchUri({
+  required String searchTerm,
   required String translationType,
-  required String chapterString,
-  int limit = 10,
-  int offset = 0,
+  int limit = 26,
 }) {
+
+  Map<String, dynamic> searchInput = {
+    "query": searchTerm,
+    "isManga": true, 
+  };
+  
   // Construct the variables map
   Map<String, dynamic> variables = {
-    "mangaId": mangaId,
+    "search": searchInput,
+    "limit": limit, 
+    "page": 1, 
     "translationType": translationType,
-    "chapterString": chapterString,
-    "limit": limit,
-    "offset": offset
+    "countryOrigin": "ALL",
   };
   // Convert the variables map to a JSON string
   String encodedVariables = jsonEncode(variables);
   
   // Remove extra spaces and new lines from the query string for cleaner output
-  String compactQuery = chapterPagesQuery.replaceAll("\n", " ").replaceAll("  ", " ").trim();
+  String compactQuery = mangaSearchQuery.replaceAll("\n", " ").replaceAll("  ", " ").trim();
   
   // Encode the query for URL safety
   String encodedQuery = Uri.encodeComponent(compactQuery);

@@ -2,49 +2,55 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:mango/api/panels.dart';
+// import 'package:mango/chapters.dart';
+import 'package:mango/mangas.dart';
 
 void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: ImageGalleryPage(),
+    // home: MangaSelectionPage(),
+    home: MangasSearchResult(searchTerm: "latna",),
   ));
 }
 
 class ImageGalleryPage extends StatefulWidget {
-  const ImageGalleryPage({super.key});
+  final String mangaId;
+  final String title;
+
+  const ImageGalleryPage({Key? key, required this.mangaId, required this.title}) : super(key: key);
+
   @override
   _ImageGalleryPageState createState() => _ImageGalleryPageState();
 }
 
 class _ImageGalleryPageState extends State<ImageGalleryPage> {
-  int _selectedIndex = 0;
 
   // Async function to fetch image URLs
   Future<List<String>> fetchImageUrls() async {
     return getChapterPagesUrls(
-      mangaId: "bjKg6rj5rh539Wfey",
+      mangaId: widget.mangaId,
       chapterString: "1",
     );
   }
 
   // Function to handle bottom bar item clicks
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    // Handle navigation logic here (for now, just print)
-    switch (index) {
-      case 0:
-        print("Search Clicked");
-        break;
-      case 1:
-        print("Bookmark Clicked");
-        break;
-      case 2:
-        print("Shelf Clicked");
-        break;
-    }
-  }
+  // void _onItemTapped(int index) {
+  //   setState(() {
+  //     _selectedIndex = index;
+  //   });
+  //   // Handle navigation logic here (for now, just print)
+  //   switch (index) {
+  //     case 0:
+  //       print("Search Clicked");
+  //       break;
+  //     case 1:
+  //       print("Bookmark Clicked");
+  //       break;
+  //     case 2:
+  //       print("Shelf Clicked");
+  //       break;
+  //   }
+  // }
 
   @override
    Widget build(BuildContext context) {
@@ -54,7 +60,7 @@ class _ImageGalleryPageState extends State<ImageGalleryPage> {
       extendBodyBehindAppBar: true,
 
       appBar: AppBar(
-        title: Text("MangaName - 1", style: TextStyle(color: Colors.white)),
+        title: Text(widget.title, style: TextStyle(color: Colors.white)),
         centerTitle: true,
         elevation: 0, // Remove shadow
         backgroundColor: Colors.transparent, // Transparent AppBar
@@ -72,7 +78,7 @@ class _ImageGalleryPageState extends State<ImageGalleryPage> {
             ),
           ),
         ),
-      ),
+      ) ,
 
       body: FutureBuilder<List<String>>(
         future: fetchImageUrls(),
@@ -81,7 +87,7 @@ class _ImageGalleryPageState extends State<ImageGalleryPage> {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(
-                child: Text("Failed to load images",
+                child: Text("Pannels could not be fetched",
                     style: TextStyle(color: Colors.white)));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(

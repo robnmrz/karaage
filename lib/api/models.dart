@@ -1,6 +1,4 @@
-import 'package:path/path.dart' as p;
-
-const String thumbnailBaseUrl = "https://wp.youtube-anime.com/aln.youtube-anime.com/";
+import 'package:mango/api/utils.dart';
 
 ///////////////////////////////////////
 // MANGA CHAPTER PAGES
@@ -169,7 +167,7 @@ class LastChapterInfo {
 class MangaEdge {
   final String id;
   final String name;
-  final String englishName;
+  final String? englishName;
   final String thumbnail;
   final LastChapterInfo lastChapterInfo;
   final LastChapterDate lastChapterDate;
@@ -196,7 +194,7 @@ class MangaEdge {
       id: json['_id'],
       name: json['name'],
       englishName: json['englishName'],
-      thumbnail: p.join(thumbnailBaseUrl, json['thumbnail']), 
+      thumbnail: createThumbnailUrl(json['thumbnail']),
       lastChapterInfo: LastChapterInfo.fromJson(json['lastChapterInfo']),
       lastChapterDate: LastChapterDate.fromJson(json['lastChapterDate']),
       chapterCount: json['chapterCount'],
@@ -244,3 +242,119 @@ class MangaSearchResponse {
 ///////////////////////////////////////
 // MANGA DETAILS
 ///////////////////////////////////////
+class AvailableChaptersDetail {
+  final List<dynamic> sub;
+  final List<dynamic> raw;
+
+  AvailableChaptersDetail({required this.sub, required this.raw});
+
+  factory AvailableChaptersDetail.fromJson(Map<String, dynamic> json) {
+    return AvailableChaptersDetail(
+      sub: json['sub'],
+      raw: json['raw'],
+    );
+  }
+}
+class Manga {
+  final String id;
+  final String name;
+  final String? englishName;
+  final String thumbnail;
+  final LastChapterInfo lastChapterInfo;
+  final LastChapterDate lastChapterDate;
+  final double? score;
+  final AvailableChapters availableChapters;
+  final String? description;
+  final List<dynamic> genres;
+  final String? status;
+  final int? averageScore;
+  final String? banner;
+  final AvailableChaptersDetail availableChaptersDetail;
+  final List<dynamic> tags;
+
+  Manga({
+    required this.id,
+    required this.name,
+    required this.englishName,
+    required this.thumbnail,
+    required this.lastChapterInfo,
+    required this.lastChapterDate,
+    required this.score,
+    required this.availableChapters,
+    required this.description,
+    required this.genres,
+    required this.status,
+    required this.averageScore,
+    required this.banner,
+    required this.availableChaptersDetail,
+    required this.tags,
+  });
+
+  // getter to check if description is given and not empty string
+  bool get hasDescription => description != null && description != '';
+
+  // getter to check if banner is given and not empty string
+  bool get hasBanner => banner != null && banner != '';
+
+  // Factory constructor returning a default "empty" instance
+  factory Manga.empty() {
+    return Manga(
+      id: '',
+      name: '',
+      englishName: '',
+      thumbnail: '',
+      lastChapterInfo: LastChapterInfo.fromJson({"sub": {"chapterString": "", "pictureUrlsProcessed": 0}}),
+      lastChapterDate: LastChapterDate.fromJson({"sub": {"year": 0, "month": 0, "date": 0, "hour": 0, "minute": 0}}),
+      score: 0,
+      availableChapters: AvailableChapters.fromJson({"sub": 0, "raw": 0}),
+      description: '',
+      genres: [],
+      status: '',
+      averageScore: 0,
+      banner: '',
+      availableChaptersDetail: AvailableChaptersDetail.fromJson({"sub": [], "raw": []}),
+      tags: [],
+    );
+  }
+  factory Manga.fromJson(Map<String, dynamic> json) {
+    return Manga(
+      id: json['_id'],
+      name: json['name'],
+      englishName: json['englishName'],
+      thumbnail: createThumbnailUrl(json['thumbnail']),
+      lastChapterInfo: LastChapterInfo.fromJson(json['lastChapterInfo']),
+      lastChapterDate: LastChapterDate.fromJson(json['lastChapterDate']),
+      score: json['score'],
+      availableChapters: AvailableChapters.fromJson(json['availableChapters']),
+      description: json['description'],
+      genres: json['genres'],
+      status: json['status'],
+      averageScore: json['averageScore'],
+      banner: json['banner'],
+      availableChaptersDetail: AvailableChaptersDetail.fromJson(json['availableChaptersDetail']),
+      tags: json['tags'],
+    );
+  }
+}
+
+class MangaDetailsResponse {
+  final Map<String, dynamic> rawData;
+  final Manga manga;
+
+  MangaDetailsResponse({required this.manga, required this.rawData});  
+
+  // Factory constructor returning a default "empty" instance
+  factory MangaDetailsResponse.empty() {
+    return MangaDetailsResponse(
+      rawData: {},
+      manga: Manga.empty(),
+    );
+  }
+
+  factory MangaDetailsResponse.fromJson(Map<String, dynamic> json) {
+    return MangaDetailsResponse(
+      rawData: json,
+      manga: Manga.fromJson(json['data']['manga']),
+    );
+  }
+}

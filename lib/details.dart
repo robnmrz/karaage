@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mango/main.dart';
+import 'package:mango/pages.dart';
 
 class MangaSelectionPage extends StatelessWidget {
-  MangaSelectionPage({Key? key}) : super(key: key);
+  MangaSelectionPage({super.key});
   final List<Map<String, String>> mangaList = [
     {"title": "Manga One", "mangaId": "bjKg6rj5rh539Wfey"},
     {"title": "Manga Two", "mangaId": "ajJg7hj9rh123Xyze"},

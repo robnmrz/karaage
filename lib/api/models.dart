@@ -30,7 +30,7 @@ class ChapterEdge {
   final String chapterString;
   final List<Picture> pictureUrls;
   final String pictureUrlsProcessed;
-  final String pictureUrlHead;
+  final String? pictureUrlHead;
 
   ChapterEdge({
     required this.chapterString,
@@ -102,6 +102,13 @@ class AvailableChapters {
       raw: json['raw'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'sub': sub,
+      'raw': raw,
+    };
+  }
 }
 
 class LastChapterDateMeta{
@@ -122,6 +129,16 @@ class LastChapterDateMeta{
       hour: json['hour'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'year': year,
+      'month': month,
+      'date': date,
+      'minute': minute,
+      'hour': hour,
+    };
+  }
 }
 
 class LastChapterDate {
@@ -133,6 +150,12 @@ class LastChapterDate {
     return LastChapterDate(
       sub: LastChapterDateMeta.fromJson(json['sub']),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'sub': sub.toJson(),
+    };
   }
 }
 
@@ -149,6 +172,12 @@ class LastChapterInfoMeta{
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'chapterString': chapterString,
+      'pictureUrlsProcessed': pictureUrlsProcessed,
+    };
+  }
 }
 
 class LastChapterInfo {
@@ -161,6 +190,12 @@ class LastChapterInfo {
       sub: LastChapterInfoMeta.fromJson(json['sub']),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'sub': sub.toJson(),
+    };
+  }
 }
 
 // Model for a manga edges 
@@ -172,7 +207,7 @@ class MangaEdge {
   final LastChapterInfo lastChapterInfo;
   final LastChapterDate lastChapterDate;
   final String? chapterCount;
-  final double? score;
+  final num? score;
   final AvailableChapters availableChapters;
   final String? lastUpdateEnd;
 
@@ -244,17 +279,22 @@ class MangaSearchResponse {
 ///////////////////////////////////////
 class AvailableChaptersDetail {
   final List<dynamic> sub;
-  final List<dynamic> raw;
 
-  AvailableChaptersDetail({required this.sub, required this.raw});
+  AvailableChaptersDetail({required this.sub});
 
   factory AvailableChaptersDetail.fromJson(Map<String, dynamic> json) {
     return AvailableChaptersDetail(
       sub: json['sub'],
-      raw: json['raw'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'sub': sub,
+    };
+  }
 }
+
 class Manga {
   final String id;
   final String name;
@@ -262,15 +302,16 @@ class Manga {
   final String thumbnail;
   final LastChapterInfo lastChapterInfo;
   final LastChapterDate lastChapterDate;
-  final double? score;
+  final num? score;
   final AvailableChapters availableChapters;
-  final String? description;
+  final String description;
   final List<dynamic> genres;
   final String? status;
-  final int? averageScore;
+  final num? averageScore;
   final String? banner;
   final AvailableChaptersDetail availableChaptersDetail;
   final List<dynamic> tags;
+  final List<dynamic> authors;
 
   Manga({
     required this.id,
@@ -288,32 +329,34 @@ class Manga {
     required this.banner,
     required this.availableChaptersDetail,
     required this.tags,
+    required this.authors
   });
-
-  // getter to check if description is given and not empty string
-  bool get hasDescription => description != null && description != '';
 
   // getter to check if banner is given and not empty string
   bool get hasBanner => banner != null && banner != '';
 
+  // getter to check if englishName is given and not empty string
+  bool get hasEnglishName => englishName != null && englishName != '';
+
   // Factory constructor returning a default "empty" instance
   factory Manga.empty() {
     return Manga(
-      id: '',
-      name: '',
-      englishName: '',
-      thumbnail: '',
-      lastChapterInfo: LastChapterInfo.fromJson({"sub": {"chapterString": "", "pictureUrlsProcessed": 0}}),
+      id: "_empty",
+      name: "N/A",
+      englishName: "N/A",
+      thumbnail: "https://wp.youtube-anime.com/s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx179256-TRND01mxfNgM.jpg?w=250",
+      lastChapterInfo: LastChapterInfo.fromJson({"sub": {"chapterString": "0", "pictureUrlsProcessed": 0}}),
       lastChapterDate: LastChapterDate.fromJson({"sub": {"year": 0, "month": 0, "date": 0, "hour": 0, "minute": 0}}),
       score: 0,
       availableChapters: AvailableChapters.fromJson({"sub": 0, "raw": 0}),
-      description: '',
+      description: "N/A",
       genres: [],
-      status: '',
+      status: "N/A",
       averageScore: 0,
-      banner: '',
+      banner: "N/A",
       availableChaptersDetail: AvailableChaptersDetail.fromJson({"sub": [], "raw": []}),
       tags: [],
+      authors: [],
     );
   }
   factory Manga.fromJson(Map<String, dynamic> json) {
@@ -326,15 +369,36 @@ class Manga {
       lastChapterDate: LastChapterDate.fromJson(json['lastChapterDate']),
       score: json['score'],
       availableChapters: AvailableChapters.fromJson(json['availableChapters']),
-      description: json['description'],
+      description:  parseHtmlString(json['description']),
       genres: json['genres'],
       status: json['status'],
       averageScore: json['averageScore'],
       banner: json['banner'],
       availableChaptersDetail: AvailableChaptersDetail.fromJson(json['availableChaptersDetail']),
       tags: json['tags'],
+      authors: json['authors'],
     );
   }
+
+  // convert to json map
+  Map<String, dynamic> toJson() => {
+    '_id': id,
+    'name': name,
+    'englishName': englishName,
+    'thumbnail': thumbnail,
+    'lastChapterInfo': lastChapterInfo.toJson(),
+    'lastChapterDate': lastChapterDate.toJson(),
+    'score': score,
+    'availableChapters': availableChapters.toJson(),
+    'description': description,
+    'genres': genres,
+    'status': status,
+    'averageScore': averageScore,
+    'banner': banner,
+    'availableChaptersDetail': availableChaptersDetail.toJson(),
+    'tags': tags,
+    'authors': authors,
+  };
 }
 
 class MangaDetailsResponse {

@@ -1,50 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:mango/api/panels.dart';
 import 'package:mango/components/appbar.dart';
+import 'package:mango/components/floating_bottombar.dart';
 
-class ImageGalleryPage extends StatefulWidget {
+class MangaPanelsPage extends StatefulWidget {
   final String mangaId;
   final String title;
+  final String chapterString;
   
-  const ImageGalleryPage({super.key, required this.mangaId, required this.title});
+  const MangaPanelsPage({
+    super.key, 
+    required this.mangaId, 
+    required this.title,
+    required this.chapterString 
+    });
 
   @override
-  _ImageGalleryPageState createState() => _ImageGalleryPageState();
+  _MangaPanelsPageState createState() => _MangaPanelsPageState();
 }
 
-class _ImageGalleryPageState extends State<ImageGalleryPage> {
-
+class _MangaPanelsPageState extends State<MangaPanelsPage> {
   // Async function to fetch image URLs
   Future<List<String>> fetchImageUrls() async {
     return getChapterPagesUrls(
       mangaId: widget.mangaId,
-      chapterString: "1",
+      chapterString: widget.chapterString
     );
   }
 
-  // Function to handle bottom bar item clicks
-  // void _onItemTapped(int index) {
-  //   setState(() {
-  //     _selectedIndex = index;
-  //   });
-  //   // Handle navigation logic here (for now, just print)
-  //   switch (index) {
-  //     case 0:
-  //       print("Search Clicked");
-  //       break;
-  //     case 1:
-  //       print("Bookmark Clicked");
-  //       break;
-  //     case 2:
-  //       print("Shelf Clicked");
-  //       break;
-  //   }
-  // }
-
   @override
    Widget build(BuildContext context) {
+    bool isFirstChapter = int.tryParse(widget.chapterString)! <= 1;
+    
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       extendBody: true, // Allows the image to flow behind the navbar
       extendBodyBehindAppBar: true,
 
@@ -84,8 +73,7 @@ class _ImageGalleryPageState extends State<ImageGalleryPage> {
                   return Image.network(
                     imageUrls[index],
                     width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.fitWidth,
                     loadingBuilder: (context, child, loadingProgress) {
                       if (loadingProgress == null) return child;
                       return Container(
@@ -105,32 +93,24 @@ class _ImageGalleryPageState extends State<ImageGalleryPage> {
                   );
                 },
               ),
-
-              // // Glass Bottom Navigation Bar
-              // Positioned(
-              //   left: 0,
-              //   right: 0,
-              //   bottom: 0,
-              //   child: ClipRRect(
-              //     child: BackdropFilter(
-              //       filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20), // Blur effect
-              //       child: BottomNavigationBar(
-              //         backgroundColor: Colors.black.withValues(alpha: 0.4), // Transparent glass effect
-              //         elevation: 0, // Remove shadow
-              //         selectedItemColor: Colors.white,
-              //         unselectedItemColor: Colors.white,
-              //         currentIndex: _selectedIndex,
-              //         onTap: _onItemTapped,
-              //         iconSize: 20,
-              //         items: [
-              //           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-              //           BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: 'Bookmark'),
-              //           BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'Shelf'),
-              //         ],
-              //       ),
-              //     ),
-              //   ),
-              // ),
+                            // Floating Bottom Bar
+              FloatingBottomBar(
+                isBackDisabled: isFirstChapter,
+                onBackPressed: () {
+                  if (!isFirstChapter) {
+                    print("Back pressed");
+                    // Implement chapter navigation logic
+                  }
+                },
+                onForwardPressed: () {
+                  print("Forward pressed");
+                  // Implement forward chapter logic
+                },
+                onSearchPressed: () {
+                  print("Search pressed");
+                  // Implement search or zoom functionality
+                },
+              ),
             ],
           );
         },

@@ -1,5 +1,6 @@
 import 'package:mango/api/models.dart';
 import 'package:path/path.dart' as p;
+import 'package:html_unescape/html_unescape.dart';
 
 const String thumbnailBaseUrl = "https://wp.youtube-anime.com/aln.youtube-anime.com/";
 const String thumbnailBaseOther = "https://wp.youtube-anime.com"; 
@@ -43,6 +44,22 @@ String getTimeAgo(LastChapterDate lastChapterDate) {
   } else {
     return "${(difference.inDays / 365).floor()} years ago";
   }
+}
+
+String parseHtmlString(String? htmlString) {
+  if (htmlString == null) {
+    return "N/A";
+  }
+  
+  // Decode HTML entities
+  var unescape = HtmlUnescape();
+  String decoded = unescape.convert(htmlString);
+
+  // Remove <br> tags and newlines
+  String cleaned = decoded.replaceAll(RegExp(r'<br\s*/?>|\n'), ' ');
+
+  // Trim extra spaces and normalize multiple spaces to a single space
+  return cleaned.replaceAll(RegExp(r'\s+'), ' ').trim();
 }
 
 // void main() {

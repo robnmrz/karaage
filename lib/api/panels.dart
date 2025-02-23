@@ -16,8 +16,18 @@ Future<List<String>> getChapterPagesUrls({
     mangaId: mangaId,
     chapterString: chapterString,
   );
-  String urlBase = response.chapterPages.edges[0].pictureUrlHead;
-  return response.chapterPages.edges[0].pictureUrls.map((pic) => urlBase+pic.url).toList();
+
+  if (response.chapterPages.edges.isEmpty) {
+    return [];
+  }
+
+  try {
+    String urlBase = response.chapterPages.edges[0].pictureUrlHead!;
+    return response.chapterPages.edges[0].pictureUrls.map((pic) => urlBase+pic.url).toList();
+  } catch (e) {
+    print('Panels URLs Exception: $e');
+    return [];
+  }
 }
 
 Future<ChapterPagesResponse> getChapterPages({
@@ -45,11 +55,11 @@ Future<ChapterPagesResponse> getChapterPages({
     if (response.statusCode == 200) {
       return ChapterPagesResponse.fromJson(jsonDecode(response.body));
     } else {
-      print('Error: ${response.statusCode}');
+      print('Panels Error: ${response.statusCode}');
       return ChapterPagesResponse(rawData: {}, chapterPages: ChapterPages(edges: []));
     }
   } catch (e) {
-    print('Exception: $e');
+    print('Panels Exception: $e');
     return ChapterPagesResponse(rawData: {}, chapterPages: ChapterPages(edges: []));
   }
 }

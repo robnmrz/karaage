@@ -51,6 +51,7 @@ String mangaDetailsQuery = '''
       banner
       availableChaptersDetail
       tags
+      authors
     } 
   }
 ''';

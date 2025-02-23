@@ -25,11 +25,11 @@ Future<MangaDetailsResponse> getMangaDetails({
     if (response.statusCode == 200) {
       return MangaDetailsResponse.fromJson(jsonDecode(response.body));
     } else {
-      print('Error: ${response.statusCode}');
+      print('Details Error: ${response.statusCode}');
       return MangaDetailsResponse.empty();
     }
   } catch (e) {
-    print('Exception: $e');
+    print('Details Exception: $e');
     return MangaDetailsResponse.empty();
   }
 }
@@ -59,3 +59,8 @@ Uri generateMangaDetailsUri({
   // Construct the final request Uri
   return Uri.parse("$apiBaseUrl?variables=$encodedVariables&query=$encodedQuery");
 }
+
+// void main() async {
+//   MangaDetailsResponse response = await getMangaDetails(id: "bjKg6rj5rh539Wfey");
+//   print(response.rawData);
+// }

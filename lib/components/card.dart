@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mango/api/models.dart';
 import 'package:mango/api/utils.dart';
 
-class CustomMangaCard extends StatefulWidget {
+class CustomMangaCard extends StatelessWidget {
   final String imageUrl;
   final String title;
   final LastChapterDate lastChapterDate;
@@ -19,22 +19,9 @@ class CustomMangaCard extends StatefulWidget {
   });
 
   @override
-  _CustomMangaCardState createState() => _CustomMangaCardState();
-}
-
-class _CustomMangaCardState extends State<CustomMangaCard> {
-  bool favorit = false; // Initially set to false
-
-  void _toggleFavorite() {
-    setState(() {
-      favorit = !favorit; // Toggle the favorit state
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: widget.onTap,
+      onTap: onTap,
       child: SizedBox(
         height: 250, // Define a fixed height to avoid layout issues
         child: Card(
@@ -50,7 +37,7 @@ class _CustomMangaCardState extends State<CustomMangaCard> {
               // Background Image
               Positioned.fill(
                   child: Image.network(
-                    widget.imageUrl,
+                    imageUrl,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Image.asset(
@@ -69,25 +56,11 @@ class _CustomMangaCardState extends State<CustomMangaCard> {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.black.withValues(alpha: 0.3),
-                        Colors.black.withValues(alpha: 0.7),
+                        Colors.black.withValues(alpha: 0.1),
+                        Colors.black.withValues(alpha: 0.5),
                       ],
                     ),
                   ),
-                ),
-              ),
-
-              // Heart Icon in the top right corner
-              Positioned(
-                top: 0,
-                right: 0,
-                child: IconButton(
-                  icon: Icon(
-                    favorit ? Icons.favorite : Icons.favorite_border,
-                    color: favorit ? Colors.red[400] : Colors.white,
-                    size: 30, // Adjust the size if needed
-                  ),
-                  onPressed: _toggleFavorite, // Toggle the favorite status when clicked
                 ),
               ),
 
@@ -99,7 +72,7 @@ class _CustomMangaCardState extends State<CustomMangaCard> {
                 child: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.6),
+                    color: Colors.black.withValues(alpha: 0.8),
                     borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(12),
                       bottomRight: Radius.circular(12),
@@ -110,7 +83,7 @@ class _CustomMangaCardState extends State<CustomMangaCard> {
                     mainAxisSize: MainAxisSize.min, // Avoid unnecessary space
                     children: [
                       Text(
-                        widget.title,
+                        title,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                         style: const TextStyle(
@@ -138,7 +111,7 @@ class _CustomMangaCardState extends State<CustomMangaCard> {
                               ),
                               const SizedBox(width: 4), // Small spacing between icon and text
                               Text(
-                                widget.lastChapterInfo.sub.chapterString, // Display the number of chapters
+                                lastChapterInfo.sub.chapterString, // Display the number of chapters
                                 style: TextStyle(
                                   color: Colors.white70,
                                   fontSize: 12,
@@ -157,7 +130,7 @@ class _CustomMangaCardState extends State<CustomMangaCard> {
                               ),
                               const SizedBox(width: 4), // Small spacing between icon and text
                               Text(
-                                getTimeAgo(widget.lastChapterDate), // Display the number of chapters
+                                getTimeAgo(lastChapterDate), // Display the number of chapters
                                 style: TextStyle(
                                   color: Colors.white70,
                                   fontSize: 12,

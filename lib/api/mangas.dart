@@ -29,11 +29,11 @@ Future<MangaSearchResponse> searchMangas({
     if (response.statusCode == 200) {
       return MangaSearchResponse.fromJson(jsonDecode(response.body));
     } else {
-      print('Error: ${response.statusCode}');
+      print('Search Error: ${response.statusCode}');
       return MangaSearchResponse(rawData: {}, mangas: Mangas(edges: []));
     }
   } catch (e) {
-    print('Exception: $e');
+    print('Search Exception: $e');
     return MangaSearchResponse(rawData: {}, mangas: Mangas(edges: []));
   }
 }

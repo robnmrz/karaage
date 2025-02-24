@@ -1,9 +1,8 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
+import 'package:mango/collection.dart';
 import 'package:mango/components/bottombar.dart';
-import 'package:mango/details.dart';
-import 'package:mango/panels.dart';
+// import 'package:mango/details.dart';
+// import 'package:mango/panels.dart';
 import 'package:mango/search.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,8 +19,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _pages = [
     HomePage(),
     MangasSearchResult(),
-    MangaDetailsPage(mangaId: "bjKg6rj5rh539Wfey"),
-    MangaPanelsPage(title: "Some Chapter", mangaId: "bjKg6rj5rh539Wfey", chapterString: "1"),
+    // MangaDetailsPage(mangaId: "bjKg6rj5rh539Wfey", mangaTitle: "Latna Saga"),
+    // MangaPanelsPage(mangaId: "bjKg6rj5rh539Wfey", chapterString: "1"),
   ];
 
   void _onItemTapped(int index) {
@@ -66,34 +65,3 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-
-// Home Page Widget
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Image.asset(
-          'assets/images/mangoBg.jpg',
-          fit: BoxFit.fitHeight,
-        ),
-        Positioned.fill(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 30.0, sigmaY: 30.0),
-            child: Container(
-              color: Colors.black.withValues(alpha: 0.5), // Adjust opacity as needed
-            ),
-          ),
-        ), 
-
-        Center(
-          child: Text(
-            'Welcome to Mango!',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
-        )
-      ]
-    );
-  }
-}

@@ -13,6 +13,7 @@ class MangaInfoSection extends StatefulWidget {
 
 class _MangaInfoSectionState extends State<MangaInfoSection> {
   bool _isExpanded = false;
+  bool _isBookmarked = false; // Track bookmark state
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +71,40 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
                       const SizedBox(width: 6),
                       Text(widget.mangaDetails.averageScore.toString() != "null" ? "${widget.mangaDetails.averageScore} %" : "N/A", style: const TextStyle(color: Colors.white)),
                     ],
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  // Left-Aligned Square Bookmark Button with Glass Effect
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8), // Rounded edges for the glass effect
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20), // Glass blur effect
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isBookmarked = !_isBookmarked;
+                            });
+                          },
+                          child: Container(
+                            width: 45, // Square shape
+                            height: 45,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.2), // Transparent white
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            alignment: Alignment.center,
+                            child: Icon(
+                              _isBookmarked ? Icons.bookmark : Icons.bookmark_outline,
+                              color: _isBookmarked ? Colors.orange : Colors.white,
+                              size: 28,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),

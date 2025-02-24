@@ -7,15 +7,19 @@ class FloatingBottomBar extends StatelessWidget {
   final VoidCallback onBackPressed;
   final VoidCallback onForwardPressed;
   final VoidCallback onSearchPressed;
+  final String chapterString;
   final bool isBackDisabled;
+  final bool isForwardDisabled;
 
   const FloatingBottomBar({
-    Key? key,
+    super.key,
     required this.onBackPressed,
     required this.onForwardPressed,
     required this.onSearchPressed,
+    required this.chapterString,
     required this.isBackDisabled,
-  }) : super(key: key);
+    required this.isForwardDisabled,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -50,16 +54,19 @@ class FloatingBottomBar extends StatelessWidget {
                   isDisabled: isBackDisabled,
                 ),
                 _buildDivider(), // Divider between buttons
-                _buildIconButton(
-                  icon: Icons.search,
-                  onPressed: onSearchPressed,
-                  isDisabled: false,
+                Text(
+                  chapterString,
+                  style: const TextStyle(
+                    color: Colors.white, 
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
+                  ),
                 ),
                 _buildDivider(), // Divider between buttons
                 _buildIconButton(
                   icon: Icons.arrow_forward,
                   onPressed: onForwardPressed,
-                  isDisabled: false,
+                  isDisabled: isForwardDisabled,
                 ),
               ],
             ),

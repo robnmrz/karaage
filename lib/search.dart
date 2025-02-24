@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mango/api/mangas.dart';
 import 'package:mango/api/models.dart';
 import 'package:mango/components/card.dart';
+import 'package:mango/components/noanimation_router.dart';
 import 'package:mango/details.dart';
 
 class MangasSearchResult extends StatefulWidget {
@@ -65,7 +66,7 @@ class _MangasSearchResultState extends State<MangasSearchResult> {
 
               // Searchbar
               Padding(
-                padding: const EdgeInsets.only(top: 60, left: 10, right: 10),
+                padding: const EdgeInsets.only(top: 70, left: 10, right: 10),
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
@@ -131,8 +132,9 @@ class _MangasSearchResultState extends State<MangasSearchResult> {
                                   // Navigate to details page and pass the mangaId
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(
+                                    NoAnimationPageRoute(
                                       builder: (context) => MangaDetailsPage(
+                                        mangaTitle: mangaList[index].name,
                                         mangaId: mangaList[index].id,
                                       ),
                                     ),

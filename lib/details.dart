@@ -8,8 +8,9 @@ import 'package:mango/components/info_section.dart';
 
 class MangaDetailsPage extends StatefulWidget {
   final String mangaId;
+  final String mangaTitle;
 
-  const MangaDetailsPage({super.key, required this.mangaId});
+  const MangaDetailsPage({super.key, required this.mangaId, required this.mangaTitle});
 
   @override
   State<MangaDetailsPage> createState() => _MangaDetailsPageState();
@@ -20,6 +21,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   late Future<MangaDetailsResponse> _mangaDetailsFuture;
   List<List<dynamic>> _chapterGroups = [];
   int _selectedRangeIndex = 0;
+  List<dynamic> sortedChapterList = [];
 
   @override
   void initState() {
@@ -40,9 +42,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
     }
   
     List<List<dynamic>> groups = [];
-    List<dynamic> chaptersReversed = chapters.reversed.toList();
-    for (int i = 0; i < chaptersReversed.length; i += rangeSize) {
-      groups.add(chaptersReversed.sublist(i, (i + rangeSize > chaptersReversed.length) ? chaptersReversed.length : i + rangeSize));
+    sortedChapterList = chapters.reversed.toList();
+    for (int i = 0; i < sortedChapterList.length; i += rangeSize) {
+      groups.add(sortedChapterList.sublist(i, (i + rangeSize > sortedChapterList.length) ? sortedChapterList.length : i + rangeSize));
     }
     return groups;
   }
@@ -54,6 +56,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       extendBodyBehindAppBar: true,
 
       appBar: GlassAppBar(
+        title: widget.mangaTitle,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
@@ -198,7 +201,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
                   // Chapter grid component
                   ChapterList(
-                    chapters: _chapterGroups.isEmpty ? [] : _chapterGroups[_selectedRangeIndex],
+                    chaptersGroup: _chapterGroups.isEmpty ? [] : _chapterGroups[_selectedRangeIndex],
+                    chapters: sortedChapterList,
                     mangaTitle: mangaDetails.name,
                     mangaId: mangaDetails.id,
                   ),

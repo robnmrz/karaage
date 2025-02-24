@@ -1,71 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:mango/api/panels.dart';
-import 'package:mango/components/appbar.dart';
+import 'package:mango/components/closebutton.dart';
 import 'package:mango/components/floating_bottombar.dart';
+import 'package:mango/components/noanimation_router.dart';
+import 'package:mango/components/temp_store.dart';
 
 class MangaPanelsPage extends StatefulWidget {
   final String mangaId;
-  final String title;
   final String chapterString;
+  final List<dynamic> chapters; // List of chapters
   
   const MangaPanelsPage({
     super.key, 
     required this.mangaId, 
-    required this.title,
-    required this.chapterString 
-    });
+    required this.chapterString,
+    required this.chapters,
+  });
 
   @override
   _MangaPanelsPageState createState() => _MangaPanelsPageState();
 }
 
 class _MangaPanelsPageState extends State<MangaPanelsPage> {
-  // Async function to fetch image URLs
-  Future<List<String>> fetchImageUrls() async {
-    return getChapterPagesUrls(
-      mangaId: widget.mangaId,
-      chapterString: widget.chapterString
-    );
+  late int currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    // Find current index
+    currentIndex = widget.chapters.indexOf(widget.chapterString);
+  }
+
+  String getPreviousChapter() {
+    if (currentIndex > 0) {
+      return widget.chapters[currentIndex - 1].toString();
+    }
+    return widget.chapterString;
+  }
+
+  String getNextChapter() {
+    if (currentIndex < widget.chapters.length - 1) {
+      return widget.chapters[currentIndex + 1].toString();
+    }
+    return widget.chapterString;
   }
 
   @override
-   Widget build(BuildContext context) {
-    bool isFirstChapter = int.tryParse(widget.chapterString)! <= 1;
-    
+  Widget build(BuildContext context) {
+    bool isFirstChapter = currentIndex == 0;
+    bool isLastChapter = currentIndex == widget.chapters.length - 1;
+    tempStoreProvider.viewedChapters.add(widget.chapterString);
+
     return Scaffold(
       backgroundColor: Colors.white,
-      extendBody: true, // Allows the image to flow behind the navbar
+      extendBody: true,
       extendBodyBehindAppBar: true,
 
-      appBar: GlassAppBar(
-        title: widget.title,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context); // Go back
-          },
-        ),
-      ),
-
       body: FutureBuilder<List<String>>(
-        future: fetchImageUrls(),
+        future: getChapterPagesUrls(mangaId: widget.mangaId, chapterString: widget.chapterString),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(
-                child: Text("Pannels could not be fetched",
-                    style: TextStyle(color: Colors.white)));
+            return Center(child: Text("Panels could not be fetched", style: TextStyle(color: Colors.white)));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
-                child: Text("No images found",
-                    style: TextStyle(color: Colors.white)));
+            return Center(child: Text("No images found", style: TextStyle(color: Colors.white)));
           }
 
           List<String> imageUrls = snapshot.data!;
           return Stack(
             children: [
-              // Image list behind the navbar
               ListView.builder(
                 padding: EdgeInsets.zero,
                 itemCount: imageUrls.length,
@@ -93,22 +97,45 @@ class _MangaPanelsPageState extends State<MangaPanelsPage> {
                   );
                 },
               ),
-                            // Floating Bottom Bar
+
+              // Floating Close Button
+              GlassCloseButton(),          
+
+              // Floating Bottom Bar
               FloatingBottomBar(
                 isBackDisabled: isFirstChapter,
+                isForwardDisabled: isLastChapter,
+                chapterString: widget.chapterString,
                 onBackPressed: () {
                   if (!isFirstChapter) {
-                    print("Back pressed");
-                    // Implement chapter navigation logic
+                    Navigator.pushReplacement(
+                      context,
+                      NoAnimationPageRoute(
+                        builder: (context) => MangaPanelsPage(
+                          mangaId: widget.mangaId,
+                          chapterString: getPreviousChapter(),
+                          chapters: widget.chapters,
+                        ),
+                      ),
+                    );
                   }
                 },
                 onForwardPressed: () {
-                  print("Forward pressed");
-                  // Implement forward chapter logic
+                  if (!isLastChapter) {
+                    Navigator.pushReplacement(
+                      context,
+                      NoAnimationPageRoute(
+                        builder: (context) => MangaPanelsPage(
+                          mangaId: widget.mangaId,
+                          chapterString: getNextChapter(),
+                          chapters: widget.chapters,
+                        ),
+                      ),
+                    );
+                  }
                 },
                 onSearchPressed: () {
-                  print("Search pressed");
-                  // Implement search or zoom functionality
+                  print("Search Pressed");
                 },
               ),
             ],

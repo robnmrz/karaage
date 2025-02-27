@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mango/db/app_database.dart';
 import 'package:mango/home.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AppDatabase.instance.database;
   runApp(MyApp());
 }
 

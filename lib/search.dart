@@ -129,6 +129,7 @@ class _MangasSearchResultState extends State<MangasSearchResult> {
                                 lastChapterDate: mangaList[index].lastChapterDate,
                                 lastChapterInfo: mangaList[index].lastChapterInfo,
                                 onTap: () {
+
                                   // Navigate to details page and pass the mangaId
                                   Navigator.push(
                                     context,

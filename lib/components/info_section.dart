@@ -157,7 +157,7 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.mangaDetails.description,
+                  widget.mangaDetails.description ?? "N/A",
                   maxLines: _isExpanded ? null : 2,
                   overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 14, color: Colors.white),

@@ -5,7 +5,11 @@ class GlassCloseButton extends StatelessWidget {
   final double size; // Size of the circular button
   final double iconSize; // Size of the "X" icon
 
-  const GlassCloseButton({super.key, this.size = 35, this.iconSize = 18});
+  const GlassCloseButton({
+    super.key,
+    this.size = 35,
+    this.iconSize = 18,
+    });
 
   @override
   Widget build(BuildContext context) {

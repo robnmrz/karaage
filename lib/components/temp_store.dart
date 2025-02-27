@@ -8,6 +8,7 @@ class TempStoreProvider {
   TempStoreProvider._internal();
 
   Set<String> viewedChapters = {};
+  Set<String> savedMangas = {};
 }
 
 final tempStoreProvider = TempStoreProvider();

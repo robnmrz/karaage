@@ -5,6 +5,7 @@ import 'package:mango/api/models.dart';
 import 'package:mango/components/appbar.dart';
 import 'package:mango/components/chapter_list.dart';
 import 'package:mango/components/info_section.dart';
+import 'package:mango/db/app_database.dart';
 
 class MangaDetailsPage extends StatefulWidget {
   final String mangaId;
@@ -17,11 +18,12 @@ class MangaDetailsPage extends StatefulWidget {
 }
 
 class _MangaDetailsPageState extends State<MangaDetailsPage> {
-
   late Future<MangaDetailsResponse> _mangaDetailsFuture;
   List<List<dynamic>> _chapterGroups = [];
   int _selectedRangeIndex = 0;
   List<dynamic> sortedChapterList = [];
+  
+  final AppDatabase db = AppDatabase.instance;
 
   @override
   void initState() {
@@ -31,9 +33,10 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
   // Async function to fetch manga details
   Future<MangaDetailsResponse> fetchMangaDetails() async {
-    return getMangaDetails(
-      id: widget.mangaId,
-    );
+    final mangaDetails = await getMangaDetails(id: widget.mangaId);
+    int res = await db.insertManga(mangaDetails.manga); // Insert into DB
+    print("res: $res");
+    return mangaDetails;
   }
 
   List<List<dynamic>> splitChaptersIntoRanges(List<dynamic> chapters, int rangeSize) {

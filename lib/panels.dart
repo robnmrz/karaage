@@ -108,7 +108,7 @@ class _MangaPanelsPageState extends State<MangaPanelsPage> {
                 chapterString: widget.chapterString,
                 onBackPressed: () {
                   if (!isFirstChapter) {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       NoAnimationPageRoute(
                         builder: (context) => MangaPanelsPage(

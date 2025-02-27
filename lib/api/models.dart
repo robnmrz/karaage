@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:mango/api/utils.dart';
 
 ///////////////////////////////////////
@@ -304,7 +306,7 @@ class Manga {
   final LastChapterDate lastChapterDate;
   final num? score;
   final AvailableChapters availableChapters;
-  final String description;
+  final String? description;
   final List<dynamic> genres;
   final String? status;
   final num? averageScore;
@@ -312,6 +314,10 @@ class Manga {
   final AvailableChaptersDetail availableChaptersDetail;
   final List<dynamic> tags;
   final List<dynamic> authors;
+  final bool isFavorite;
+  final List<String>? chaptersRead;
+  final int? chaptersReadTotal;
+  final String? lastChapterRead;
 
   Manga({
     required this.id,
@@ -329,7 +335,11 @@ class Manga {
     required this.banner,
     required this.availableChaptersDetail,
     required this.tags,
-    required this.authors
+    required this.authors,
+    required this.isFavorite,
+    this.chaptersRead,
+    this.chaptersReadTotal,
+    this.lastChapterRead
   });
 
   // getter to check if banner is given and not empty string
@@ -357,6 +367,7 @@ class Manga {
       availableChaptersDetail: AvailableChaptersDetail.fromJson({"sub": [], "raw": []}),
       tags: [],
       authors: [],
+      isFavorite: false,
     );
   }
   factory Manga.fromJson(Map<String, dynamic> json) {
@@ -377,6 +388,7 @@ class Manga {
       availableChaptersDetail: AvailableChaptersDetail.fromJson(json['availableChaptersDetail']),
       tags: json['tags'],
       authors: json['authors'],
+      isFavorite: false,
     );
   }
 
@@ -398,6 +410,7 @@ class Manga {
     'availableChaptersDetail': availableChaptersDetail.toJson(),
     'tags': tags,
     'authors': authors,
+    'isFavorite': isFavorite
   };
 }
 
@@ -421,4 +434,60 @@ class MangaDetailsResponse {
       manga: Manga.fromJson(json['data']['manga']),
     );
   }
+}
+
+extension MangaDBExtension on Manga {
+  Map<String, dynamic> toDbJson() {
+    return {
+      'id': id,
+      'name': name,
+      'englishName': englishName,
+      'thumbnail': thumbnail,
+      'lastChapter': lastChapterInfo.sub.chapterString,
+      'lastChapterDate': lastChapterDate.sub.year * 10000000000 + // save in milliseconds
+          lastChapterDate.sub.month * 100000000 +
+          lastChapterDate.sub.date * 1000000 +
+          lastChapterDate.sub.hour * 10000 +
+          lastChapterDate.sub.minute * 100,
+      'availableChapters': availableChapters.sub,
+      'score': score,
+      'status': status,
+      'averageScore': averageScore,
+      'chaptersRead': jsonEncode([]),
+      'chaptersReadTotal': 0,
+      'isFavorite': isFavorite ? 1 : 0,
+      'lastChapterRead': "",
+    };  
+  }
+
+  static Manga fromDbJson(Map<String, dynamic> json) {
+    return Manga(
+      id: json['id'],
+      name: json['name'],
+      englishName: json['englishName'],
+      thumbnail: json['thumbnail'],
+      lastChapterInfo: LastChapterInfo(sub: LastChapterInfoMeta(chapterString: json['lastChapter'], pictureUrlsProcessed: 0)),
+      lastChapterDate: LastChapterDate(sub: LastChapterDateMeta(
+        year: json['lastChapterDate'] ~/ 10000000000,
+        month: (json['lastChapterDate'] % 10000000000) ~/ 100000000,
+        date: (json['lastChapterDate'] % 100000000) ~/ 1000000,
+        hour: (json['lastChapterDate'] % 1000000) ~/ 10000,
+        minute: (json['lastChapterDate'] % 10000) ~/ 100,
+      )),
+      availableChapters: AvailableChapters(sub: json['availableChapters'], raw: 0),
+      score: json['score'],
+      status: json['status'],
+      averageScore: json['averageScore'],
+      chaptersRead: json['chaptersRead'],
+      chaptersReadTotal: json['chaptersReadTotal'],
+      isFavorite: json['isFavorite'] == 1,
+      lastChapterRead: json['lastChapterRead'],
+      authors: [],
+      tags: [],
+      genres: [],
+      banner: "",
+      description: "N/A",
+      availableChaptersDetail: AvailableChaptersDetail.fromJson({}),
+    );
+  } 
 }

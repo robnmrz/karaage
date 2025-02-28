@@ -139,10 +139,16 @@ class AppDatabase {
 
   Future<int> insertReadChapter(String mangaId, String chapter) async {
     final db = await instance.database;
-    return await db.insert(chaptersReadTableName, {
-      mangaIdField: mangaId,
-      chapterStringField: chapter,
-    }, conflictAlgorithm: ConflictAlgorithm.ignore);
+    try {
+      int result = await db.insert(chaptersReadTableName, {
+        mangaIdField: mangaId,
+        chapterStringField: chapter,
+      }, conflictAlgorithm: ConflictAlgorithm.ignore);
+      return result;
+    } catch (e) {
+      print('Insert read chapter exception: $e');
+      return 0;
+    }
   }
 
   Future<List<String>> getReadChaptersByMangaId(String mangaId) async {

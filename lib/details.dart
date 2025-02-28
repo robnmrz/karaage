@@ -85,20 +85,92 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
         future: _mangaDetailsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                // Background Image
+                Positioned.fill(
+                  child: Image.asset(
+                    'assets/images/mangoBg.jpg',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+
+                // Blur Effect
+                Positioned.fill(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 30.0, sigmaY: 30.0),
+                    child: Container(
+                      color: Colors.black.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ),
+
+                // Loading Indicator
+                Center(child: CircularProgressIndicator(color: Colors.white)),
+              ],
+            );
           } else if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                "Pannels could not be fetched",
-                style: TextStyle(color: Colors.white),
-              ),
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                // Background Image
+                Positioned.fill(
+                  child: Image.asset(
+                    'assets/images/mangoBg.jpg',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+
+                // Blur Effect
+                Positioned.fill(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 30.0, sigmaY: 30.0),
+                    child: Container(
+                      color: Colors.black.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ),
+
+                // Error Message
+                Center(
+                  child: Text(
+                    "Sorry, something went wrong",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
             );
           } else if (!snapshot.hasData) {
-            return Center(
-              child: Text(
-                "No images found",
-                style: TextStyle(color: Colors.white),
-              ),
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                // Background Image
+                Positioned.fill(
+                  child: Image.asset(
+                    'assets/images/mangoBg.jpg',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+
+                // Blur Effect
+                Positioned.fill(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 30.0, sigmaY: 30.0),
+                    child: Container(
+                      color: Colors.black.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ),
+
+                // No Data Message
+                Center(
+                  child: Text(
+                    "No details about this Manga found.",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
             );
           }
 
@@ -116,6 +188,12 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                     ? mangaDetails.banner!
                     : mangaDetails.thumbnail,
                 fit: BoxFit.fitHeight,
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.asset(
+                    'assets/images/mangoBg.jpg',
+                    fit: BoxFit.cover,
+                  );
+                },
               ),
               Positioned.fill(
                 child: BackdropFilter(

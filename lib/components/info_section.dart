@@ -71,6 +71,14 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
                 width: 120,
                 height: 180,
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Image(
+                    image: AssetImage("assets/images/defaultThumbnail.jpg"),
+                    width: 120,
+                    height: 180,
+                    fit: BoxFit.cover,
+                  );
+                },
               ),
             ),
             const SizedBox(width: 16),
@@ -89,6 +97,8 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
 
                   const SizedBox(height: 2),

@@ -39,6 +39,12 @@ class HomePageState extends State<HomePage> {
   Future<void> _loadMangas() async {
     try {
       List<Manga> mangas = await db.readFavoritedMangas();
+      for (var manga in mangas) {
+        List<String> readChapters = await db.getReadChaptersByMangaId(manga.id);
+        manga.readChaptersCount =
+            readChapters.length; // Add the read count to the Manga object
+      }
+
       setState(() {
         _allMangas = mangas;
         _filteredMangas = mangas;
@@ -197,7 +203,7 @@ class MangaItem extends StatelessWidget {
                   manga.englishName == null || manga.englishName == ""
                       ? manga.name
                       : manga.englishName!,
-                  style: const TextStyle(fontSize: 15, color: Colors.white),
+                  style: const TextStyle(fontSize: 14, color: Colors.white),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -210,27 +216,59 @@ class MangaItem extends StatelessWidget {
                     const Icon(
                       Icons.menu_book,
                       color: Colors.white70,
-                      size: 18,
+                      size: 16,
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      "0 / ${manga.availableChapters.sub}",
-                      style: const TextStyle(color: Colors.white70),
+                      "${manga.readChaptersCount} / ${manga.availableChapters.sub}",
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 4),
-                // Last Updated
+
+                // Manga Status
                 Row(
                   children: [
-                    const Icon(Icons.update, color: Colors.white70, size: 18),
+                    Icon(
+                      Icons.calendar_today,
+                      color:
+                          manga.status == "Finished"
+                              ? Colors.greenAccent
+                              : Colors.orangeAccent,
+                      size: 16,
+                    ),
                     const SizedBox(width: 6),
                     Text(
-                      getTimeAgo(manga.lastChapterDate),
-                      style: const TextStyle(color: Colors.white70),
+                      manga.status ?? "Unknown",
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
+
+                const SizedBox(height: 4),
+
+                // Last Updated (only if manga is not finished)
+                if (manga.status != "Finished")
+                  Row(
+                    children: [
+                      const Icon(Icons.update, color: Colors.white70, size: 16),
+                      const SizedBox(width: 6),
+                      Text(
+                        getTimeAgo(manga.lastChapterDate),
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
           ),

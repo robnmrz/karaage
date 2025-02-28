@@ -2,8 +2,9 @@ import 'package:mango/api/models.dart';
 import 'package:path/path.dart' as p;
 import 'package:html_unescape/html_unescape.dart';
 
-const String thumbnailBaseUrl = "https://wp.youtube-anime.com/aln.youtube-anime.com/";
-const String thumbnailBaseOther = "https://wp.youtube-anime.com"; 
+const String thumbnailBaseUrl =
+    "https://wp.youtube-anime.com/aln.youtube-anime.com/";
+const String thumbnailBaseOther = "https://wp.youtube-anime.com";
 
 // Url explanation
 // https://wp.youtube-anime.com/aln.youtube-anime.com/mcovers/m_tbs/v9GG2hqJDaTA2HmmF/111.png?w=250 // this is adjustable size
@@ -16,8 +17,9 @@ const String thumbnailBaseOther = "https://wp.youtube-anime.com";
 // http://cdn.mangaupdates.com/image/i361197.jpg
 
 String createThumbnailUrl(String thumbnail, {int width = 250}) {
-  String thumbnailUrl; 
-  if (thumbnail.startsWith("https://s4") || thumbnail.startsWith("http://cdn")) {
+  String thumbnailUrl;
+  if (thumbnail.startsWith("https://s4") ||
+      thumbnail.startsWith("http://cdn")) {
     String thumnailRelative = thumbnail.replaceFirst(RegExp(r"^https?://"), "");
     thumbnailUrl = p.join(thumbnailBaseOther, thumnailRelative);
     return "$thumbnailUrl?w=$width";
@@ -29,20 +31,34 @@ String createThumbnailUrl(String thumbnail, {int width = 250}) {
 
 String getTimeAgo(LastChapterDate lastChapterDate) {
   LastChapterDateMeta dateObject = lastChapterDate.sub;
-  DateTime inputDate = DateTime(dateObject.year, dateObject.month, dateObject.date, dateObject.hour, dateObject.minute);
+  DateTime inputDate = DateTime(
+    dateObject.year,
+    dateObject.month + 1,
+    dateObject.date,
+    dateObject.hour,
+    dateObject.minute,
+  );
   DateTime now = DateTime.now();
   Duration difference = now.difference(inputDate);
 
-  if (difference.inHours < 24) {
-    return "${difference.inHours} hours ago";
+  if (difference.inMinutes < 60) {
+    int minutes = difference.inMinutes;
+    return "$minutes ${minutes == 1 ? 'minute' : 'minutes'} ago";
+  } else if (difference.inHours < 24) {
+    int hours = difference.inHours;
+    return "$hours ${hours == 1 ? 'hour' : 'hours'} ago";
   } else if (difference.inDays < 7) {
-    return "${difference.inDays} days ago";
-  } else if (difference.inDays < 21) {
-    return "${(difference.inDays / 7).floor()} weeks ago";
+    int days = difference.inDays;
+    return "$days ${days == 1 ? 'day' : 'days'} ago";
+  } else if (difference.inDays < 30) {
+    int weeks = (difference.inDays / 7).floor();
+    return "$weeks ${weeks == 1 ? 'week' : 'weeks'} ago";
   } else if (difference.inDays < 365) {
-    return "${(difference.inDays / 30).floor()} months ago";
+    int months = (difference.inDays / 30).floor();
+    return "$months ${months == 1 ? 'month' : 'months'} ago";
   } else {
-    return "${(difference.inDays / 365).floor()} years ago";
+    int years = (difference.inDays / 365).floor();
+    return "$years ${years == 1 ? 'year' : 'years'} ago";
   }
 }
 
@@ -50,7 +66,7 @@ String parseHtmlString(String? htmlString) {
   if (htmlString == null) {
     return "N/A";
   }
-  
+
   // Decode HTML entities
   var unescape = HtmlUnescape();
   String decoded = unescape.convert(htmlString);

@@ -42,7 +42,6 @@ class _ChapterListState extends State<ChapterList> {
     List<String> readChapters = await db.getReadChaptersByMangaId(
       widget.mangaId,
     );
-    print("read chapters: $readChapters");
     setState(() {
       viewedChapters = readChapters.toSet();
     });
@@ -51,7 +50,7 @@ class _ChapterListState extends State<ChapterList> {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      padding: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.only(top: 10, bottom: 20),
       shrinkWrap: true, // Prevents infinite height error
       physics:
           const NeverScrollableScrollPhysics(), // Allows scrolling inside a parent SingleChildScrollView

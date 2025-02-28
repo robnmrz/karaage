@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:mango/api/models.dart';
 import 'package:mango/db/schema.dart';
 import 'package:path/path.dart';
@@ -17,9 +15,17 @@ class AppDatabase {
   Future<Database> _initializeDB(String fileName) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, fileName);
+
+    // // ✅ Delete existing database before opening the new one
+    // if (await databaseExists(dbPath)) {
+    //   await deleteDatabase(dbPath);
+    //   print("Old database deleted.");
+    // }
+
     return await openDatabase(
       path,
       version: 1,
+      onConfigure: _onConfigure,
       onCreate: _createDB,
     );
   }
@@ -30,36 +36,67 @@ class AppDatabase {
     return _database!;
   }
 
+  Future _onConfigure(Database db) async {
+    await db.execute("PRAGMA foreign_keys=ON;");
+  }
+
   Future _createDB(Database db, int version) async {
+    await db.execute('DROP TABLE IF EXISTS $tableName;');
+    await db.execute('DROP TABLE IF EXISTS $chaptersReadTableName;');
+
     await db.execute('''
       CREATE TABLE $tableName (
-        $idField $idType,
+        $mangaIdField $idType,
         $nameField $textTypeNotNullable,
         $englishNameField $textTypeNullable,
         $thumbnailField $textTypeNotNullable,
         $lastChapterField $textTypeNotNullable,
-        $lastChapterDateField $textTypeNullable,
+        $lastChapterDateField $intTypeNullable,
         $scoreField $doubleTypeNullable,
+        $statusField $textTypeNullable,
         $ratingField $intTypeNullable,
         $availableChaptersField $intTypeNotNullable,
-        $chaptersReadField $textTypeNullable,
-        $chaptersReadTotalField $intTypeNullable,
-        $lastChapterReadField $textTypeNullable,
-        $isFavoriteField $boolType,
-        $statusField $textTypeNullable
+        $isFavoriteField $boolType
       )
-      '''
-    );
+    ''');
+
+    await db.execute('''
+      CREATE TABLE $chaptersReadTableName (
+        $mangaIdField $textTypeNotNullable,
+        $chapterStringField $textTypeNotNullable,
+        PRIMARY KEY ($mangaIdField, $chapterStringField),
+        FOREIGN KEY ($mangaIdField) REFERENCES $tableName ($mangaIdField) ON DELETE CASCADE
+      )
+    ''');
   }
 
   Future<int> insertManga(Manga manga) async {
-    print(manga.toDbJson());
     final db = await instance.database;
-    return await db.insert(
+    try {
+      int result = await db.insert(
+        'mangas',
+        manga.toDbJson(),
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
+      return result;
+    } catch (e) {
+      print('Insert Exception: $e');
+      return 0;
+    }
+  }
+
+  // get manga by id
+  Future<Manga?> getMangaById(String mangaId) async {
+    final db = await instance.database;
+    final List<Map<String, dynamic>> maps = await db.query(
       'mangas',
-      manga.toDbJson(),
-      conflictAlgorithm: ConflictAlgorithm.ignore,
+      where: '$mangaIdField = ?',
+      whereArgs: [mangaId],
     );
+    if (maps.isNotEmpty) {
+      return MangaDBExtension.fromDbJson(maps.first);
+    }
+    return null;
   }
 
   // return a list of mangas from db where isFavorite is true
@@ -68,8 +105,8 @@ class AppDatabase {
 
     final List<Map<String, dynamic>> maps = await db.query(
       'mangas',
-      where: '$isFavoriteField = ?',  // Filter where isFavorite is 1 (true)
-      whereArgs: [1],                 // 1 represents true in SQLite
+      where: '$isFavoriteField = ?', // Filter where isFavorite is 1 (true)
+      whereArgs: [1], // 1 represents true in SQLite
       orderBy: '$nameField ASC',
     );
 
@@ -86,65 +123,37 @@ class AppDatabase {
       {
         isFavoriteField: isFavorite ? 1 : 0, // Convert bool to int
       },
-      where: '$idField = ?',
+      where: '$mangaIdField = ?',
       whereArgs: [mangaId],
     );
   }
 
-  Future<void> updateChaptersRead(String mangaId, String newChapter) async {
+  // get all mangas from db
+  Future<List<Manga>> fetchAllMangas() async {
     final db = await instance.database;
-
-    // Retrieve current chaptersRead and chaptersReadTotal
-    final List<Map<String, dynamic>> result = await db.query(
-      'mangas',
-      columns: [chaptersReadField, chaptersReadTotalField],
-      where: '$idField = ?',
-      whereArgs: [mangaId],
-    );
-
-    if (result.isNotEmpty) {
-      String jsonString = result.first[chaptersReadField] as String;
-      List<String> readChapters = List<String>.from(jsonDecode(jsonString));
-      int currentTotal = result.first[chaptersReadTotalField] as int? ?? 0;
-
-      // Increment chaptersReadTotal
-      int updatedTotal = currentTotal + 1;
-
-      // Add new chapter if not already in list
-      if (!readChapters.contains(newChapter)) {
-        readChapters.add(newChapter);
-
-        // Update the database with the new list
-        await db.update(
-          'mangas',
-          {
-            chaptersReadField: jsonEncode(readChapters),
-            chaptersReadTotalField: updatedTotal,
-          },
-          where: '$idField = ?',
-          whereArgs: [mangaId],
-        );
-      }
-    }
+    final List<Map<String, dynamic>> maps = await db.query('mangas');
+    return List.generate(maps.length, (i) {
+      return MangaDBExtension.fromDbJson(maps[i]);
+    });
   }
 
-  // get chapters read for a manga
-  Future<List<String>> fetchChaptersRead(String mangaId) async {
+  Future<int> insertReadChapter(String mangaId, String chapter) async {
     final db = await instance.database;
+    return await db.insert(chaptersReadTableName, {
+      mangaIdField: mangaId,
+      chapterStringField: chapter,
+    }, conflictAlgorithm: ConflictAlgorithm.ignore);
+  }
 
-    final List<Map<String, dynamic>> result = await db.query(
-      'mangas',
-      columns: [chaptersReadField],
-      where: '$idField = ?',
+  Future<List<String>> getReadChaptersByMangaId(String mangaId) async {
+    final db = await instance.database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      chaptersReadTableName,
+      where: '$mangaIdField = ?',
       whereArgs: [mangaId],
     );
 
-    if (result.isNotEmpty) {
-      String jsonString = result.first[chaptersReadField] as String;
-      return List<String>.from(jsonDecode(jsonString));
-    } else {
-      return [];
-    }
+    return maps.map((map) => map[chapterStringField] as String).toList();
   }
 
   Future<void> close() async {

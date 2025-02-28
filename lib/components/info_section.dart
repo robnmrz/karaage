@@ -2,6 +2,7 @@ import "dart:ui";
 
 import "package:flutter/material.dart";
 import "package:mango/api/models.dart";
+import "package:mango/db/app_database.dart";
 
 class MangaInfoSection extends StatefulWidget {
   final Manga mangaDetails;
@@ -15,6 +16,45 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
   bool _isExpanded = false;
   bool _isBookmarked = false; // Track bookmark state
 
+  final AppDatabase db = AppDatabase.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBookmarkStatus(); // Load bookmark status when widget initializes
+  }
+
+  /// Fetches bookmark status from database
+  Future<void> _fetchBookmarkStatus() async {
+    try {
+      Manga? manga = await db.getMangaById(widget.mangaDetails.id);
+      if (manga != null) {
+        setState(() {
+          _isBookmarked = manga.isFavorite;
+        });
+      }
+    } catch (e) {
+      print("Error fetching bookmark status: $e");
+    }
+  }
+
+  /// Toggles bookmark status and updates the database
+  Future<void> _toggleBookmark() async {
+    try {
+      bool newStatus = !_isBookmarked;
+
+      // Update UI
+      setState(() {
+        _isBookmarked = newStatus;
+      });
+
+      // Update Database entry with new fav status
+      await db.updateIsFavorite(widget.mangaDetails.id, newStatus);
+    } catch (e) {
+      print("Error updating bookmark status: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -23,7 +63,6 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             // Thumbnail / Cover Image
             ClipRRect(
               borderRadius: BorderRadius.circular(5),
@@ -42,23 +81,41 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.mangaDetails.hasEnglishName ? widget.mangaDetails.englishName! : widget.mangaDetails.name,
-                    style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white),
+                    widget.mangaDetails.hasEnglishName
+                        ? widget.mangaDetails.englishName!
+                        : widget.mangaDetails.name,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
 
                   const SizedBox(height: 2),
 
                   // Authors
-                  Text(widget.mangaDetails.authors.isNotEmpty ? widget.mangaDetails.authors[0].toUpperCase() : "N/A", style: TextStyle(color: Colors.white70, fontSize: 12)),
-                  
+                  Text(
+                    widget.mangaDetails.authors.isNotEmpty
+                        ? widget.mangaDetails.authors[0].toUpperCase()
+                        : "N/A",
+                    style: TextStyle(color: Colors.white70, fontSize: 12),
+                  ),
+
                   const SizedBox(height: 10),
 
                   // Releasing Status
                   Row(
                     children: [
-                      const Icon(Icons.calendar_today, color: Colors.white70, size: 14),
+                      const Icon(
+                        Icons.calendar_today,
+                        color: Colors.white70,
+                        size: 14,
+                      ),
                       const SizedBox(width: 6),
-                      Text(widget.mangaDetails.status ?? "N/A", style: const TextStyle(color: Colors.white)),
+                      Text(
+                        widget.mangaDetails.status ?? "N/A",
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     ],
                   ),
 
@@ -69,7 +126,12 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
                     children: [
                       const Icon(Icons.star, color: Colors.white70, size: 14),
                       const SizedBox(width: 6),
-                      Text(widget.mangaDetails.averageScore.toString() != "null" ? "${widget.mangaDetails.averageScore} %" : "N/A", style: const TextStyle(color: Colors.white)),
+                      Text(
+                        widget.mangaDetails.averageScore.toString() != "null"
+                            ? "${widget.mangaDetails.averageScore} %"
+                            : "N/A",
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     ],
                   ),
 
@@ -79,26 +141,32 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8), // Rounded edges for the glass effect
+                      borderRadius: BorderRadius.circular(
+                        8,
+                      ), // Rounded edges for the glass effect
                       child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20), // Glass blur effect
+                        filter: ImageFilter.blur(
+                          sigmaX: 20,
+                          sigmaY: 20,
+                        ), // Glass blur effect
                         child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _isBookmarked = !_isBookmarked;
-                            });
-                          },
+                          onTap: _toggleBookmark,
                           child: Container(
                             width: 45, // Square shape
                             height: 45,
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.2), // Transparent white
+                              color: Colors.white.withValues(
+                                alpha: 0.2,
+                              ), // Transparent white
                               borderRadius: BorderRadius.circular(8),
                             ),
                             alignment: Alignment.center,
                             child: Icon(
-                              _isBookmarked ? Icons.bookmark : Icons.bookmark_outline,
-                              color: _isBookmarked ? Colors.orange : Colors.white,
+                              _isBookmarked
+                                  ? Icons.bookmark
+                                  : Icons.bookmark_outline,
+                              color:
+                                  _isBookmarked ? Colors.orange : Colors.white,
                               size: 28,
                             ),
                           ),
@@ -124,16 +192,23 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
               return ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // Glass effect
+                  filter: ImageFilter.blur(
+                    sigmaX: 10,
+                    sigmaY: 10,
+                  ), // Glass effect
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2), // Light transparent white
+                      color: Colors.white.withValues(
+                        alpha: 0.2,
+                      ), // Light transparent white
                       borderRadius: BorderRadius.circular(20),
                     ),
                     margin: const EdgeInsets.only(right: 8),
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                     child: Text(
-                      widget.mangaDetails.genres.isNotEmpty ? widget.mangaDetails.genres[index] : "N/A",
+                      widget.mangaDetails.genres.isNotEmpty
+                          ? widget.mangaDetails.genres[index]
+                          : "N/A",
                       style: const TextStyle(color: Colors.white, fontSize: 10),
                     ),
                   ),
@@ -144,12 +219,18 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
         ),
 
         const SizedBox(height: 12),
-        
+
         // Summary Header Section
-        Text("Summary".toUpperCase(),
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+        Text(
+          "Summary".toUpperCase(),
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(height: 8),
-        
+
         // Expandable Summary Content Section
         LayoutBuilder(
           builder: (context, constraints) {
@@ -159,7 +240,10 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
                 Text(
                   widget.mangaDetails.description ?? "N/A",
                   maxLines: _isExpanded ? null : 2,
-                  overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                  overflow:
+                      _isExpanded
+                          ? TextOverflow.visible
+                          : TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 14, color: Colors.white),
                 ),
                 Align(
@@ -172,12 +256,17 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
                     },
                     child: Container(
                       padding: EdgeInsets.only(top: 5),
-                      child: Text(_isExpanded ? "less" : "more",
-                          style: const TextStyle(
-                              color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 14)),
+                      child: Text(
+                        _isExpanded ? "less" : "more",
+                        style: const TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
                     ),
                   ),
-                )
+                ),
               ],
             );
           },

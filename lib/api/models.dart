@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:mango/api/utils.dart';
 
 ///////////////////////////////////////
@@ -13,17 +11,11 @@ class Picture {
   Picture({required this.num, required this.url});
 
   factory Picture.fromJson(Map<String, dynamic> json) {
-    return Picture(
-      num: json['num'],
-      url: json['url'],
-    );
+    return Picture(num: json['num'], url: json['url']);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'num': num,
-      'url': url,
-    };
+    return {'num': num, 'url': url};
   }
 }
 
@@ -44,9 +36,10 @@ class ChapterEdge {
   factory ChapterEdge.fromJson(Map<String, dynamic> json) {
     return ChapterEdge(
       chapterString: json['chapterString'],
-      pictureUrls: (json['pictureUrls'] as List)
-          .map((pic) => Picture.fromJson(pic))
-          .toList(),
+      pictureUrls:
+          (json['pictureUrls'] as List)
+              .map((pic) => Picture.fromJson(pic))
+              .toList(),
       pictureUrlsProcessed: json['pictureUrlsProcessed'],
       pictureUrlHead: json['pictureUrlHead'],
     );
@@ -64,9 +57,10 @@ class ChapterPages {
 
   factory ChapterPages.fromJson(Map<String, dynamic> json) {
     return ChapterPages(
-      edges: (json['edges'] as List)
-          .map((edge) => ChapterEdge.fromJson(edge))
-          .toList(),
+      edges:
+          (json['edges'] as List)
+              .map((edge) => ChapterEdge.fromJson(edge))
+              .toList(),
     );
   }
 }
@@ -99,28 +93,28 @@ class AvailableChapters {
   AvailableChapters({required this.sub, required this.raw});
 
   factory AvailableChapters.fromJson(Map<String, dynamic> json) {
-    return AvailableChapters(
-      sub: json['sub'],
-      raw: json['raw'],
-    );
+    return AvailableChapters(sub: json['sub'], raw: json['raw']);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'sub': sub,
-      'raw': raw,
-    };
+    return {'sub': sub, 'raw': raw};
   }
 }
 
-class LastChapterDateMeta{
+class LastChapterDateMeta {
   final int year;
   final int month;
   final int date;
   final int minute;
   final int hour;
 
-  LastChapterDateMeta({required this.year, required this.month, required this.date, required this.minute, required this.hour});
+  LastChapterDateMeta({
+    required this.year,
+    required this.month,
+    required this.date,
+    required this.minute,
+    required this.hour,
+  });
 
   factory LastChapterDateMeta.fromJson(Map<String, dynamic> json) {
     return LastChapterDateMeta(
@@ -149,23 +143,22 @@ class LastChapterDate {
   LastChapterDate({required this.sub});
 
   factory LastChapterDate.fromJson(Map<String, dynamic> json) {
-    return LastChapterDate(
-      sub: LastChapterDateMeta.fromJson(json['sub']),
-    );
+    return LastChapterDate(sub: LastChapterDateMeta.fromJson(json['sub']));
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'sub': sub.toJson(),
-    };
+    return {'sub': sub.toJson()};
   }
 }
 
-class LastChapterInfoMeta{
+class LastChapterInfoMeta {
   final String chapterString;
   final int pictureUrlsProcessed;
 
-  LastChapterInfoMeta({required this.chapterString, required this.pictureUrlsProcessed});
+  LastChapterInfoMeta({
+    required this.chapterString,
+    required this.pictureUrlsProcessed,
+  });
 
   factory LastChapterInfoMeta.fromJson(Map<String, dynamic> json) {
     return LastChapterInfoMeta(
@@ -188,19 +181,15 @@ class LastChapterInfo {
   LastChapterInfo({required this.sub});
 
   factory LastChapterInfo.fromJson(Map<String, dynamic> json) {
-    return LastChapterInfo(
-      sub: LastChapterInfoMeta.fromJson(json['sub']),
-    );
+    return LastChapterInfo(sub: LastChapterInfoMeta.fromJson(json['sub']));
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'sub': sub.toJson(),
-    };
+    return {'sub': sub.toJson()};
   }
 }
 
-// Model for a manga edges 
+// Model for a manga edges
 class MangaEdge {
   final String id;
   final String name;
@@ -223,7 +212,7 @@ class MangaEdge {
     required this.chapterCount,
     required this.score,
     required this.availableChapters,
-    required this.lastUpdateEnd
+    required this.lastUpdateEnd,
   });
 
   factory MangaEdge.fromJson(Map<String, dynamic> json) {
@@ -237,7 +226,7 @@ class MangaEdge {
       chapterCount: json['chapterCount'],
       score: json['score'],
       availableChapters: AvailableChapters.fromJson(json['availableChapters']),
-      lastUpdateEnd: json['lastUpdateEnd'], 
+      lastUpdateEnd: json['lastUpdateEnd'],
     );
   }
 }
@@ -252,9 +241,10 @@ class Mangas {
 
   factory Mangas.fromJson(Map<String, dynamic> json) {
     return Mangas(
-      edges: (json['edges'] as List)
-          .map((edge) => MangaEdge.fromJson(edge))
-          .toList(),
+      edges:
+          (json['edges'] as List)
+              .map((edge) => MangaEdge.fromJson(edge))
+              .toList(),
     );
   }
 }
@@ -263,7 +253,7 @@ class MangaSearchResponse {
   final Map<String, dynamic> rawData;
   final Mangas mangas;
 
-  MangaSearchResponse({required this.mangas, required this.rawData});  
+  MangaSearchResponse({required this.mangas, required this.rawData});
 
   // isEmpty getter to check if mangas is empty
   bool get isEmpty => mangas.isEmpty;
@@ -285,15 +275,11 @@ class AvailableChaptersDetail {
   AvailableChaptersDetail({required this.sub});
 
   factory AvailableChaptersDetail.fromJson(Map<String, dynamic> json) {
-    return AvailableChaptersDetail(
-      sub: json['sub'],
-    );
+    return AvailableChaptersDetail(sub: json['sub']);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'sub': sub,
-    };
+    return {'sub': sub};
   }
 }
 
@@ -315,9 +301,6 @@ class Manga {
   final List<dynamic> tags;
   final List<dynamic> authors;
   final bool isFavorite;
-  final List<String>? chaptersRead;
-  final int? chaptersReadTotal;
-  final String? lastChapterRead;
 
   Manga({
     required this.id,
@@ -337,9 +320,6 @@ class Manga {
     required this.tags,
     required this.authors,
     required this.isFavorite,
-    this.chaptersRead,
-    this.chaptersReadTotal,
-    this.lastChapterRead
   });
 
   // getter to check if banner is given and not empty string
@@ -354,9 +334,14 @@ class Manga {
       id: "_empty",
       name: "N/A",
       englishName: "N/A",
-      thumbnail: "https://wp.youtube-anime.com/s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx179256-TRND01mxfNgM.jpg?w=250",
-      lastChapterInfo: LastChapterInfo.fromJson({"sub": {"chapterString": "0", "pictureUrlsProcessed": 0}}),
-      lastChapterDate: LastChapterDate.fromJson({"sub": {"year": 0, "month": 0, "date": 0, "hour": 0, "minute": 0}}),
+      thumbnail:
+          "https://wp.youtube-anime.com/s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx179256-TRND01mxfNgM.jpg?w=250",
+      lastChapterInfo: LastChapterInfo.fromJson({
+        "sub": {"chapterString": "0", "pictureUrlsProcessed": 0},
+      }),
+      lastChapterDate: LastChapterDate.fromJson({
+        "sub": {"year": 0, "month": 0, "date": 0, "hour": 0, "minute": 0},
+      }),
       score: 0,
       availableChapters: AvailableChapters.fromJson({"sub": 0, "raw": 0}),
       description: "N/A",
@@ -364,7 +349,10 @@ class Manga {
       status: "N/A",
       averageScore: 0,
       banner: "N/A",
-      availableChaptersDetail: AvailableChaptersDetail.fromJson({"sub": [], "raw": []}),
+      availableChaptersDetail: AvailableChaptersDetail.fromJson({
+        "sub": [],
+        "raw": [],
+      }),
       tags: [],
       authors: [],
       isFavorite: false,
@@ -380,12 +368,14 @@ class Manga {
       lastChapterDate: LastChapterDate.fromJson(json['lastChapterDate']),
       score: json['score'],
       availableChapters: AvailableChapters.fromJson(json['availableChapters']),
-      description:  parseHtmlString(json['description']),
+      description: parseHtmlString(json['description']),
       genres: json['genres'],
       status: json['status'],
       averageScore: json['averageScore'],
       banner: json['banner'],
-      availableChaptersDetail: AvailableChaptersDetail.fromJson(json['availableChaptersDetail']),
+      availableChaptersDetail: AvailableChaptersDetail.fromJson(
+        json['availableChaptersDetail'],
+      ),
       tags: json['tags'],
       authors: json['authors'],
       isFavorite: false,
@@ -410,7 +400,7 @@ class Manga {
     'availableChaptersDetail': availableChaptersDetail.toJson(),
     'tags': tags,
     'authors': authors,
-    'isFavorite': isFavorite
+    'isFavorite': isFavorite,
   };
 }
 
@@ -418,14 +408,11 @@ class MangaDetailsResponse {
   final Map<String, dynamic> rawData;
   final Manga manga;
 
-  MangaDetailsResponse({required this.manga, required this.rawData});  
+  MangaDetailsResponse({required this.manga, required this.rawData});
 
   // Factory constructor returning a default "empty" instance
   factory MangaDetailsResponse.empty() {
-    return MangaDetailsResponse(
-      rawData: {},
-      manga: Manga.empty(),
-    );
+    return MangaDetailsResponse(rawData: {}, manga: Manga.empty());
   }
 
   factory MangaDetailsResponse.fromJson(Map<String, dynamic> json) {
@@ -439,12 +426,13 @@ class MangaDetailsResponse {
 extension MangaDBExtension on Manga {
   Map<String, dynamic> toDbJson() {
     return {
-      'id': id,
+      'mangaId': id,
       'name': name,
       'englishName': englishName,
       'thumbnail': thumbnail,
       'lastChapter': lastChapterInfo.sub.chapterString,
-      'lastChapterDate': lastChapterDate.sub.year * 10000000000 + // save in milliseconds
+      'lastChapterDate':
+          lastChapterDate.sub.year * 10000000000 + // save in milliseconds
           lastChapterDate.sub.month * 100000000 +
           lastChapterDate.sub.date * 1000000 +
           lastChapterDate.sub.hour * 10000 +
@@ -453,41 +441,45 @@ extension MangaDBExtension on Manga {
       'score': score,
       'status': status,
       'averageScore': averageScore,
-      'chaptersRead': jsonEncode([]),
-      'chaptersReadTotal': 0,
       'isFavorite': isFavorite ? 1 : 0,
-      'lastChapterRead': "",
-    };  
+    };
   }
 
   static Manga fromDbJson(Map<String, dynamic> json) {
     return Manga(
-      id: json['id'],
+      id: json['mangaId'],
       name: json['name'],
       englishName: json['englishName'],
       thumbnail: json['thumbnail'],
-      lastChapterInfo: LastChapterInfo(sub: LastChapterInfoMeta(chapterString: json['lastChapter'], pictureUrlsProcessed: 0)),
-      lastChapterDate: LastChapterDate(sub: LastChapterDateMeta(
-        year: json['lastChapterDate'] ~/ 10000000000,
-        month: (json['lastChapterDate'] % 10000000000) ~/ 100000000,
-        date: (json['lastChapterDate'] % 100000000) ~/ 1000000,
-        hour: (json['lastChapterDate'] % 1000000) ~/ 10000,
-        minute: (json['lastChapterDate'] % 10000) ~/ 100,
-      )),
-      availableChapters: AvailableChapters(sub: json['availableChapters'], raw: 0),
+      lastChapterInfo: LastChapterInfo(
+        sub: LastChapterInfoMeta(
+          chapterString: json['lastChapter'],
+          pictureUrlsProcessed: 0,
+        ),
+      ),
+      lastChapterDate: LastChapterDate(
+        sub: LastChapterDateMeta(
+          year: json['lastChapterDate'] ~/ 10000000000,
+          month: (json['lastChapterDate'] % 10000000000) ~/ 100000000,
+          date: (json['lastChapterDate'] % 100000000) ~/ 1000000,
+          hour: (json['lastChapterDate'] % 1000000) ~/ 10000,
+          minute: (json['lastChapterDate'] % 10000) ~/ 100,
+        ),
+      ),
+      availableChapters: AvailableChapters(
+        sub: json['availableChapters'],
+        raw: 0,
+      ),
       score: json['score'],
       status: json['status'],
       averageScore: json['averageScore'],
-      chaptersRead: json['chaptersRead'],
-      chaptersReadTotal: json['chaptersReadTotal'],
       isFavorite: json['isFavorite'] == 1,
-      lastChapterRead: json['lastChapterRead'],
       authors: [],
       tags: [],
       genres: [],
       banner: "",
       description: "N/A",
-      availableChaptersDetail: AvailableChaptersDetail.fromJson({}),
+      availableChaptersDetail: AvailableChaptersDetail.fromJson({"sub": []}),
     );
-  } 
+  }
 }

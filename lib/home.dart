@@ -15,17 +15,28 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
+  // Define a GlobalKey for HomePage's State
+  final GlobalKey<HomePageState> _homePageKey = GlobalKey<HomePageState>();
+
   // Pages List
-  final List<Widget> _pages = [
-    HomePage(),
-    MangasSearchResult(),
-    // MangaDetailsPage(mangaId: "bjKg6rj5rh539Wfey", mangaTitle: "Latna Saga"),
-    // MangaPanelsPage(mangaId: "bjKg6rj5rh539Wfey", chapterString: "1"),
-  ];
+  List<Widget> _pages = [HomePage(), MangasSearchResult()];
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      HomePage(key: _homePageKey), // Assign the key here
+      MangasSearchResult(),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      if (_selectedIndex == 0) {
+        _homePageKey.currentState
+            ?.reloadMangas(); // Access the state method safely
+      }
     });
   }
 
@@ -43,12 +54,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
         /// Main content with blur effect
         Scaffold(
-          backgroundColor: Colors.transparent, // Make Scaffold background transparent
+          backgroundColor:
+              Colors.transparent, // Make Scaffold background transparent
           extendBody: true,
-          body: IndexedStack(
-            index: _selectedIndex,
-            children: _pages,
-          ),
+          body: IndexedStack(index: _selectedIndex, children: _pages),
           bottomNavigationBar: Theme(
             data: ThemeData(
               splashColor: Colors.transparent,
@@ -64,4 +73,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-

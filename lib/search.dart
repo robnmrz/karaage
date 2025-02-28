@@ -46,7 +46,9 @@ class _MangasSearchResultState extends State<MangasSearchResult> {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 30.0, sigmaY: 30.0),
             child: Container(
-              color: Colors.black.withValues(alpha: 0.5), // Adjust opacity if needed
+              color: Colors.black.withValues(
+                alpha: 0.5,
+              ), // Adjust opacity if needed
             ),
           ),
         ),
@@ -54,7 +56,8 @@ class _MangasSearchResultState extends State<MangasSearchResult> {
         /// Main content inside Scaffold
         Scaffold(
           extendBody: true,
-          backgroundColor: Colors.transparent, // Make Scaffold blend with background
+          backgroundColor:
+              Colors.transparent, // Make Scaffold blend with background
           // appBar: AppBar(
           //   title: Text("Search Mangas", style: const TextStyle(color: Colors.white)),
           //   centerTitle: true,
@@ -63,7 +66,6 @@ class _MangasSearchResultState extends State<MangasSearchResult> {
           // ),
           body: Column(
             children: [
-
               // Searchbar
               Padding(
                 padding: const EdgeInsets.only(top: 70, left: 10, right: 10),
@@ -74,78 +76,109 @@ class _MangasSearchResultState extends State<MangasSearchResult> {
                     hintStyle: TextStyle(color: Colors.white60),
                     suffixIcon: IconButton(
                       icon: Icon(Icons.search, color: Colors.white60),
-                      onPressed: () => _onSearchSubmitted(_searchController.text),
+                      onPressed:
+                          () => _onSearchSubmitted(_searchController.text),
                     ),
                     border: OutlineInputBorder(),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: const Color.fromARGB(255, 191, 105, 0), width: 1.0), // Color when focused
+                      borderSide: BorderSide(
+                        color: const Color.fromARGB(255, 191, 105, 0),
+                        width: 1.0,
+                      ), // Color when focused
                     ),
                     filled: true,
-                    fillColor: Colors.black.withValues(alpha: 0.3), // Transparent input field
+                    fillColor: Colors.black.withValues(
+                      alpha: 0.3,
+                    ), // Transparent input field
                   ),
                   style: TextStyle(color: Colors.white),
-                  cursorColor: Color.fromARGB(255, 191, 105, 0), // Change cursor color to white
+                  cursorColor: Color.fromARGB(
+                    255,
+                    191,
+                    105,
+                    0,
+                  ), // Change cursor color to white
                   onSubmitted: _onSearchSubmitted,
                 ),
               ),
 
               Expanded(
-                child: _searchFuture == null
-                    ? Center(
-                        child: Text("Please enter a search term",
-                            style: TextStyle(color: Colors.white)),
-                      )
-                    : FutureBuilder<MangaSearchResponse>(
-                        future: _searchFuture,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return Center(child: CircularProgressIndicator());
-                          } else if (snapshot.hasError) {
-                            return Center(
-                                child: Text("Failed to fetch mangas",
-                                    style: TextStyle(color: Colors.white)));
-                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                            return Center(
-                                child: Text("No matching mangas found",
-                                    style: TextStyle(color: Colors.white)));
-                          }
-
-                          // Return manga cards
-                          List<MangaEdge> mangaList = snapshot.data!.mangas.edges;
-                          return GridView.builder(
-                            padding: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 110.0),
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2, // Two cards per row
-                              crossAxisSpacing: 10,
-                              mainAxisSpacing: 10,
-                              childAspectRatio: 0.7, // Adjust height
-                            ),
-                            itemCount: mangaList.length,
-                            itemBuilder: (context, index) {
-                              // MangaCard Component
-                              return CustomMangaCard(
-                                imageUrl: mangaList[index].thumbnail,
-                                title: mangaList[index].name,
-                                lastChapterDate: mangaList[index].lastChapterDate,
-                                lastChapterInfo: mangaList[index].lastChapterInfo,
-                                onTap: () {
-
-                                  // Navigate to details page and pass the mangaId
-                                  Navigator.push(
-                                    context,
-                                    NoAnimationPageRoute(
-                                      builder: (context) => MangaDetailsPage(
-                                        mangaTitle: mangaList[index].name,
-                                        mangaId: mangaList[index].id,
-                                      ),
-                                    ),
-                                  );
-                                },
+                child:
+                    _searchFuture == null
+                        ? Center(
+                          child: Text(
+                            "Please enter a search term",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        )
+                        : FutureBuilder<MangaSearchResponse>(
+                          future: _searchFuture,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return Center(
+                                child: Text(
+                                  "Failed to fetch mangas",
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               );
-                            },
-                          );
-                        },
-                      ),
+                            } else if (!snapshot.hasData ||
+                                snapshot.data!.isEmpty) {
+                              return Center(
+                                child: Text(
+                                  "No matching mangas found",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              );
+                            }
+
+                            // Return manga cards
+                            List<MangaEdge> mangaList =
+                                snapshot.data!.mangas.edges;
+                            return GridView.builder(
+                              padding: EdgeInsets.fromLTRB(
+                                10.0,
+                                10.0,
+                                10.0,
+                                110.0,
+                              ),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2, // Two cards per row
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 10,
+                                    childAspectRatio: 0.7, // Adjust height
+                                  ),
+                              itemCount: mangaList.length,
+                              itemBuilder: (context, index) {
+                                // MangaCard Component
+                                return CustomMangaCard(
+                                  imageUrl: mangaList[index].thumbnail,
+                                  title: mangaList[index].name,
+                                  lastChapterDate:
+                                      mangaList[index].lastChapterDate,
+                                  lastChapterInfo:
+                                      mangaList[index].lastChapterInfo,
+                                  onTap: () {
+                                    // Navigate to details page and pass the mangaId
+                                    Navigator.push(
+                                      context,
+                                      NoAnimationPageRoute(
+                                        builder:
+                                            (context) => MangaDetailsPage(
+                                              mangaTitle: mangaList[index].name,
+                                              mangaId: mangaList[index].id,
+                                            ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
               ),
             ],
           ),

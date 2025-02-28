@@ -31,6 +31,7 @@ dependencies:
   path: ^1.9.1
   http: ^0.13.6
   html_unescape: ^2.0.0
+  shared_preferences: ^2.5.2
   flutter:
     sdk: flutter
   sqflite: ^2.3.0

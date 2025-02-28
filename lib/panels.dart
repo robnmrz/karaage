@@ -4,7 +4,9 @@ import 'package:mango/api/panels.dart';
 import 'package:mango/components/closebutton.dart';
 import 'package:mango/components/floating_bottombar.dart';
 import 'package:mango/components/noanimation_router.dart';
+import 'package:mango/components/settings_button.dart';
 import 'package:mango/db/app_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MangaPanelsPage extends StatefulWidget {
   final String mangaId;
@@ -28,7 +30,7 @@ class _MangaPanelsPageState extends State<MangaPanelsPage> {
   bool _isBottomBarVisible = true;
   Future<List<String>>? _chapterPagesFuture; // Cache the future
   bool _chapterMarkedAsRead = false;
-  Set<int> viewedImages = {}; // Track viewed images
+  bool _isHorizontalScroll = false;
 
   final AppDatabase db = AppDatabase.instance;
 
@@ -44,6 +46,8 @@ class _MangaPanelsPageState extends State<MangaPanelsPage> {
       mangaId: widget.mangaId,
       chapterString: widget.chapterString,
     );
+
+    _loadScrollPreference();
   }
 
   void _onScroll() {
@@ -78,6 +82,21 @@ class _MangaPanelsPageState extends State<MangaPanelsPage> {
   Future<void> _markChapterAsRead() async {
     _chapterMarkedAsRead = true;
     await db.insertReadChapter(widget.mangaId, widget.chapterString);
+  }
+
+  Future<void> _loadScrollPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isHorizontalScroll = prefs.getBool('isHorizontalScroll') ?? false;
+    });
+  }
+
+  Future<void> _toggleScrollDirection() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isHorizontalScroll = !_isHorizontalScroll;
+    });
+    await prefs.setBool('isHorizontalScroll', _isHorizontalScroll);
   }
 
   @override
@@ -135,41 +154,81 @@ class _MangaPanelsPageState extends State<MangaPanelsPage> {
 
           return Stack(
             children: [
-              ListView.builder(
-                controller: _scrollController,
-                padding: EdgeInsets.zero,
-                itemCount: imageUrls.length,
-                itemBuilder: (context, index) {
-                  return Image.network(
-                    imageUrls[index],
-                    width: MediaQuery.of(context).size.width,
-                    fit: BoxFit.fitWidth,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Container(
-                        height: MediaQuery.of(context).size.height,
-                        alignment: Alignment.center,
-                        child: const CircularProgressIndicator(),
+              _isHorizontalScroll
+                  ? PageView.builder(
+                    reverse: true,
+                    controller: PageController(),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: imageUrls.length,
+                    itemBuilder: (context, index) {
+                      return Image.network(
+                        imageUrls[index],
+                        width: MediaQuery.of(context).size.width,
+                        fit: BoxFit.contain,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            height: MediaQuery.of(context).size.height,
+                            alignment: Alignment.center,
+                            child: const CircularProgressIndicator(),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            height: MediaQuery.of(context).size.height,
+                            alignment: Alignment.center,
+                            color: Colors.black,
+                            child: const Icon(
+                              Icons.error,
+                              color: Colors.red,
+                              size: 50,
+                            ),
+                          );
+                        },
                       );
                     },
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        height: MediaQuery.of(context).size.height,
-                        alignment: Alignment.center,
-                        color: Colors.black,
-                        child: const Icon(
-                          Icons.error,
-                          color: Colors.red,
-                          size: 50,
-                        ),
+                  )
+                  : ListView.builder(
+                    controller: _scrollController,
+                    padding: EdgeInsets.zero,
+                    itemCount: imageUrls.length,
+                    itemBuilder: (context, index) {
+                      return Image.network(
+                        imageUrls[index],
+                        width: MediaQuery.of(context).size.width,
+                        fit: BoxFit.fitWidth,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            height: MediaQuery.of(context).size.height,
+                            alignment: Alignment.center,
+                            child: const CircularProgressIndicator(),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            height: MediaQuery.of(context).size.height,
+                            alignment: Alignment.center,
+                            color: Colors.black,
+                            child: const Icon(
+                              Icons.error,
+                              color: Colors.red,
+                              size: 50,
+                            ),
+                          );
+                        },
                       );
                     },
-                  );
-                },
-              ),
+                  ),
 
               // Floating Close Button
               const GlassCloseButton(),
+
+              // Floating Settings Button
+              GlassSettingsButton(
+                onPressed: _toggleScrollDirection,
+                isHorizontalScroll: _isHorizontalScroll,
+              ),
 
               // Floating Bottom Bar with Animated Opacity
               Positioned(

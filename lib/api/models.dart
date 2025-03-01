@@ -301,7 +301,7 @@ class Manga {
   final List<dynamic> tags;
   final List<dynamic> authors;
   bool isFavorite;
-  int readChaptersCount;
+  List<String> readChapters;
 
   Manga({
     required this.id,
@@ -321,7 +321,7 @@ class Manga {
     required this.tags,
     required this.authors,
     required this.isFavorite,
-    this.readChaptersCount = 0,
+    this.readChapters = const [],
   });
 
   // getter to check if banner is given and not empty string

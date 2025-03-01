@@ -14,6 +14,7 @@ const String scoreField = "score";
 const String ratingField = "averageScore";
 const String availableChaptersField = "availableChapters";
 const String chapterStringField = "chaptersRead";
+const String chapterDoubleField = "chaptersReadDouble"; // used for sorting
 const String chaptersReadTotalField = "chaptersReadTotal";
 const String lastChapterReadField = "lastChapterRead";
 const String isFavoriteField = "isFavorite";
@@ -35,7 +36,11 @@ const List<String> mangaColumns = [
   isFavoriteField,
 ];
 
-const List<String> chaptersReadColumns = [mangaIdField, chapterStringField];
+const List<String> chaptersReadColumns = [
+  mangaIdField,
+  chapterStringField,
+  chapterDoubleField,
+];
 
 // column types
 const String idType = "TEXT PRIMARY KEY";

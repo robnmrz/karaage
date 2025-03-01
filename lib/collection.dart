@@ -6,6 +6,7 @@ import 'package:mango/api/utils.dart';
 import 'package:mango/components/noanimation_router.dart';
 import 'package:mango/db/app_database.dart';
 import 'package:mango/details.dart';
+import 'package:mango/settings.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,6 +19,7 @@ class HomePageState extends State<HomePage> {
   List<Manga> _filteredMangas = [];
   List<Manga> _allMangas = [];
   bool _isLoading = true;
+  bool _showTotalChaptersRead = false;
 
   final AppDatabase db = AppDatabase.instance;
 
@@ -25,6 +27,7 @@ class HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _loadMangas();
+    _loadSettings();
   }
 
   void reloadMangas() {
@@ -33,6 +36,7 @@ class HomePageState extends State<HomePage> {
         _isLoading = true;
       });
       _loadMangas();
+      _loadSettings();
     }
   }
 
@@ -40,9 +44,7 @@ class HomePageState extends State<HomePage> {
     try {
       List<Manga> mangas = await db.readFavoritedMangas();
       for (var manga in mangas) {
-        List<String> readChapters = await db.getReadChaptersByMangaId(manga.id);
-        manga.readChaptersCount =
-            readChapters.length; // Add the read count to the Manga object
+        manga.readChapters = await db.getReadChaptersByMangaId(manga.id);
       }
 
       setState(() {
@@ -56,6 +58,13 @@ class HomePageState extends State<HomePage> {
       });
       print("Error fetching mangas: $e");
     }
+  }
+
+  Future<void> _loadSettings() async {
+    bool preference = await getShowTotalChaptersReadPreference();
+    setState(() {
+      _showTotalChaptersRead = preference;
+    });
   }
 
   void _filterMangas(String query) {
@@ -154,7 +163,10 @@ class HomePageState extends State<HomePage> {
                                   reloadMangas();
                                 }
                               },
-                              child: MangaItem(manga: _filteredMangas[index]),
+                              child: MangaItem(
+                                manga: _filteredMangas[index],
+                                showTotalChaptersRead: _showTotalChaptersRead,
+                              ),
                             );
                           },
                         ),
@@ -170,8 +182,13 @@ class HomePageState extends State<HomePage> {
 // Widget for Each Manga Item
 class MangaItem extends StatelessWidget {
   final Manga manga;
+  final bool showTotalChaptersRead;
 
-  const MangaItem({super.key, required this.manga});
+  const MangaItem({
+    super.key,
+    required this.manga,
+    required this.showTotalChaptersRead,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +237,7 @@ class MangaItem extends StatelessWidget {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      "${manga.readChaptersCount} / ${manga.availableChapters.sub}",
+                      "${showTotalChaptersRead ? manga.readChapters.length : (manga.readChapters.isEmpty ? 0 : manga.readChapters.first)} / ${manga.availableChapters.sub}",
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 12,
@@ -237,8 +254,8 @@ class MangaItem extends StatelessWidget {
                       Icons.calendar_today,
                       color:
                           manga.status == "Finished"
-                              ? Colors.greenAccent
-                              : Colors.orangeAccent,
+                              ? Colors.white70
+                              : Colors.greenAccent,
                       size: 16,
                     ),
                     const SizedBox(width: 6),

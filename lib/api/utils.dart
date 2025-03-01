@@ -78,6 +78,12 @@ String parseHtmlString(String? htmlString) {
   return cleaned.replaceAll(RegExp(r'\s+'), ' ').trim();
 }
 
+List<String> formatChapterDoubles(List<double> numbers) {
+  return numbers.map((number) {
+    return number % 1 == 0 ? number.toInt().toString() : number.toString();
+  }).toList();
+}
+
 // void main() {
 //   LastChapterDate lastChapterDate = LastChapterDate(
 //     sub: LastChapterDateMeta(year: 2025, month: 2, date: 22, hour: 11, minute: 41)

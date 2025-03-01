@@ -4,6 +4,7 @@ import 'package:mango/components/bottombar.dart';
 // import 'package:mango/details.dart';
 // import 'package:mango/panels.dart';
 import 'package:mango/search.dart';
+import 'package:mango/settings.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<HomePageState> _homePageKey = GlobalKey<HomePageState>();
 
   // Pages List
-  List<Widget> _pages = [HomePage(), MangasSearchResult()];
+  List<Widget> _pages = [HomePage(), MangasSearchResult(), ProfilePage()];
 
   @override
   void initState() {
@@ -27,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _pages = [
       HomePage(key: _homePageKey), // Assign the key here
       MangasSearchResult(),
+      ProfilePage(),
     ];
   }
 

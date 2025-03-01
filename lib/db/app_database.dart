@@ -64,6 +64,7 @@ class AppDatabase {
       CREATE TABLE $chaptersReadTableName (
         $mangaIdField $textTypeNotNullable,
         $chapterStringField $textTypeNotNullable,
+        $chapterDoubleField $doubleTypeNotNullable,
         PRIMARY KEY ($mangaIdField, $chapterStringField),
         FOREIGN KEY ($mangaIdField) REFERENCES $tableName ($mangaIdField) ON DELETE CASCADE
       )
@@ -143,6 +144,7 @@ class AppDatabase {
       int result = await db.insert(chaptersReadTableName, {
         mangaIdField: mangaId,
         chapterStringField: chapter,
+        chapterDoubleField: double.parse(chapter),
       }, conflictAlgorithm: ConflictAlgorithm.ignore);
       return result;
     } catch (e) {
@@ -157,6 +159,7 @@ class AppDatabase {
       chaptersReadTableName,
       where: '$mangaIdField = ?',
       whereArgs: [mangaId],
+      orderBy: '$chapterDoubleField DESC',
     );
 
     return maps.map((map) => map[chapterStringField] as String).toList();

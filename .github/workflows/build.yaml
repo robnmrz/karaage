@@ -1,43 +1,14 @@
 name: iOS-ipa-build
 on:
  release:
-   types: [published]
+   types: [created]
 
 permissions:
   contents: write
 
 jobs:
-  retrieve-tag:
-    name: Retrieve Tag
-    runs-on: ubuntu-latest
-
-    outputs:
-      release-tag: ${{ steps.get_tag.outputs.RELEASE_TAG }}
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Get release tag
-      id: get_tag
-      run: echo "RELEASE_TAG=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
-
-    - name: Check tag pattern
-      run: |
-          TAG=${{ github.event.release.tag_name }}
-          if [[ ! $TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ ]]; then
-            echo "Error: Invalid tag format. Tags must follow 'vA.B.C' or 'v.A.B.C-rc.D' pattern."
-            exit 1
-          fi
-
-    - name: Display tag
-      run: echo "The released tag is $RELEASE_TAG"
-      env:
-        RELEASE_TAG: ${{ steps.get_tag.outputs.RELEASE_TAG }}
-  
   build-and-release-ios-ipa:
     runs-on: macos-latest
-    needs: retrieve-tag
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -66,6 +37,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/ios/iphoneos/mango_app.ipa
-          tag: ${{ needs.retrieve-tag.outputs.release-tag }}
+          tag: ${{ github.event.release.tag_name }}
           overwrite: true
-          body: "Mango is an app, that helps you to fully immerge into the world of Mangas"
+          body: "Release ${{ github.event.release.tag_name }}"

@@ -68,4 +68,4 @@ jobs:
           file: build/ios/iphoneos/mango_app.ipa
           tag: ${{ needs.retrieve-tag.outputs.release-tag }}
           overwrite: true
-          body: "This is first release"
+          body: "Mango is an app, that helps you to fully immerge into the world of Mangas"

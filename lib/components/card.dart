@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mango/api/models.dart';
-import 'package:mango/api/utils.dart';
+import 'package:karaage/api/models.dart';
+import 'package:karaage/api/utils.dart';
 
 class CustomMangaCard extends StatelessWidget {
   final String imageUrl;
@@ -33,20 +33,19 @@ class CustomMangaCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand, // Ensure the stack fills the card
             children: [
-
               // Background Image
               Positioned.fill(
-                  child: Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Image.asset(
-                        'assets/images/defaultThumbnail.jpg',
-                        fit: BoxFit.cover,
-                      );
-                    },
-                  ),
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      'assets/images/defaultThumbnail.jpg',
+                      fit: BoxFit.cover,
+                    );
+                  },
                 ),
+              ),
 
               // Gradient Overlay
               Positioned.fill(
@@ -100,7 +99,6 @@ class CustomMangaCard extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-
                           // chapters row (icon and text)
                           Row(
                             children: [
@@ -109,9 +107,13 @@ class CustomMangaCard extends StatelessWidget {
                                 color: Colors.white70,
                                 size: 12, // Adjust size as needed
                               ),
-                              const SizedBox(width: 4), // Small spacing between icon and text
+                              const SizedBox(
+                                width: 4,
+                              ), // Small spacing between icon and text
                               Text(
-                                lastChapterInfo.sub.chapterString, // Display the number of chapters
+                                lastChapterInfo
+                                    .sub
+                                    .chapterString, // Display the number of chapters
                                 style: TextStyle(
                                   color: Colors.white70,
                                   fontSize: 12,
@@ -119,7 +121,7 @@ class CustomMangaCard extends StatelessWidget {
                               ),
                             ],
                           ),
-                            
+
                           // last updated row (icon and text)
                           Row(
                             children: [
@@ -128,9 +130,13 @@ class CustomMangaCard extends StatelessWidget {
                                 color: Colors.white70,
                                 size: 12, // Adjust size as needed
                               ),
-                              const SizedBox(width: 4), // Small spacing between icon and text
+                              const SizedBox(
+                                width: 4,
+                              ), // Small spacing between icon and text
                               Text(
-                                getTimeAgo(lastChapterDate), // Display the number of chapters
+                                getTimeAgo(
+                                  lastChapterDate,
+                                ), // Display the number of chapters
                                 style: TextStyle(
                                   color: Colors.white70,
                                   fontSize: 12,

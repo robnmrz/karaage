@@ -1,4 +1,4 @@
-import 'package:mango/api/models.dart';
+import 'package:karaage/api/models.dart';
 import 'package:path/path.dart' as p;
 import 'package:html_unescape/html_unescape.dart';
 

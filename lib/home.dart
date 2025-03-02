@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mango/collection.dart';
-import 'package:mango/components/bottombar.dart';
-// import 'package:mango/details.dart';
-// import 'package:mango/panels.dart';
-import 'package:mango/search.dart';
-import 'package:mango/settings.dart';
+import 'package:karaage/collection.dart';
+import 'package:karaage/components/bottombar.dart';
+// import 'package:karaage/details.dart';
+// import 'package:karaage/panels.dart';
+import 'package:karaage/search.dart';
+import 'package:karaage/settings.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
         /// Background image covering the whole screen including bottom bar area
         Positioned.fill(
           child: Image.asset(
-            'assets/images/mangoBg.jpg',
+            'assets/images/karaage_app_bg.jpg',
             fit: BoxFit.cover, // Ensures full coverage
           ),
         ),

@@ -1,12 +1,12 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:mango/api/models.dart';
-import 'package:mango/api/utils.dart';
-import 'package:mango/components/noanimation_router.dart';
-import 'package:mango/db/app_database.dart';
-import 'package:mango/details.dart';
-import 'package:mango/settings.dart';
+import 'package:karaage/api/models.dart';
+import 'package:karaage/api/utils.dart';
+import 'package:karaage/components/noanimation_router.dart';
+import 'package:karaage/db/app_database.dart';
+import 'package:karaage/details.dart';
+import 'package:karaage/settings.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -86,7 +86,10 @@ class HomePageState extends State<HomePage> {
         children: [
           // Background Image
           Positioned.fill(
-            child: Image.asset('assets/images/mangoBg.jpg', fit: BoxFit.cover),
+            child: Image.asset(
+              'assets/images/karaage_app_bg.jpg',
+              fit: BoxFit.cover,
+            ),
           ),
 
           // Blur Effect

@@ -1,8 +1,8 @@
 import "dart:ui";
 
 import "package:flutter/material.dart";
-import "package:mango/api/models.dart";
-import "package:mango/db/app_database.dart";
+import "package:karaage/api/models.dart";
+import "package:karaage/db/app_database.dart";
 
 class MangaInfoSection extends StatefulWidget {
   final Manga mangaDetails;

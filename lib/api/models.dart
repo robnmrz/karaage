@@ -1,4 +1,4 @@
-import 'package:mango/api/utils.dart';
+import 'package:karaage/api/utils.dart';
 
 ///////////////////////////////////////
 // MANGA CHAPTER PAGES

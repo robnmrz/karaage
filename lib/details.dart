@@ -1,11 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:mango/api/manga_details.dart';
-import 'package:mango/api/models.dart';
-import 'package:mango/components/appbar.dart';
-import 'package:mango/components/chapter_list.dart';
-import 'package:mango/components/info_section.dart';
-import 'package:mango/db/app_database.dart';
+import 'package:karaage/api/manga_details.dart';
+import 'package:karaage/api/models.dart';
+import 'package:karaage/components/appbar.dart';
+import 'package:karaage/components/chapter_list.dart';
+import 'package:karaage/components/info_section.dart';
+import 'package:karaage/db/app_database.dart';
 
 class MangaDetailsPage extends StatefulWidget {
   final String mangaId;
@@ -91,7 +91,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                 // Background Image
                 Positioned.fill(
                   child: Image.asset(
-                    'assets/images/mangoBg.jpg',
+                    'assets/images/karaage_app_bg.jpg',
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -117,7 +117,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                 // Background Image
                 Positioned.fill(
                   child: Image.asset(
-                    'assets/images/mangoBg.jpg',
+                    'assets/images/karaage_app_bg.jpg',
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -148,7 +148,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                 // Background Image
                 Positioned.fill(
                   child: Image.asset(
-                    'assets/images/mangoBg.jpg',
+                    'assets/images/karaage_app_bg.jpg',
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -190,7 +190,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                 fit: BoxFit.fitHeight,
                 errorBuilder: (context, error, stackTrace) {
                   return Image.asset(
-                    'assets/images/mangoBg.jpg',
+                    'assets/images/karaage_app_bg.jpg',
                     fit: BoxFit.cover,
                   );
                 },

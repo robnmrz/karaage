@@ -1,5 +1,5 @@
-import 'package:mango/api/models.dart';
-import 'package:mango/db/schema.dart';
+import 'package:karaage/api/models.dart';
+import 'package:karaage/db/schema.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 

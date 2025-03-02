@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mango/components/noanimation_router.dart';
-import 'package:mango/db/app_database.dart';
-import 'package:mango/panels.dart';
+import 'package:karaage/components/noanimation_router.dart';
+import 'package:karaage/db/app_database.dart';
+import 'package:karaage/panels.dart';
 
 class ChapterList extends StatefulWidget {
   final List<dynamic> chapters;

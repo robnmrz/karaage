@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mango/components/switch.dart';
+import 'package:karaage/components/switch.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:ui';
 
@@ -41,7 +41,10 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           // Background Image
           Positioned.fill(
-            child: Image.asset('assets/images/mangoBg.jpg', fit: BoxFit.cover),
+            child: Image.asset(
+              'assets/images/karaage_app_bg.jpg',
+              fit: BoxFit.cover,
+            ),
           ),
 
           // Blur Effect

@@ -1,12 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:mango/api/panels.dart';
-import 'package:mango/components/closebutton.dart';
-import 'package:mango/components/floating_bottombar.dart';
-import 'package:mango/components/noanimation_router.dart';
-import 'package:mango/components/settings_button.dart';
-import 'package:mango/db/app_database.dart';
+import 'package:karaage/api/panels.dart';
+import 'package:karaage/components/closebutton.dart';
+import 'package:karaage/components/floating_bottombar.dart';
+import 'package:karaage/components/noanimation_router.dart';
+import 'package:karaage/components/settings_button.dart';
+import 'package:karaage/db/app_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MangaPanelsPage extends StatefulWidget {

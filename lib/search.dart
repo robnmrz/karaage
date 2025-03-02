@@ -1,10 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:mango/api/mangas.dart';
-import 'package:mango/api/models.dart';
-import 'package:mango/components/card.dart';
-import 'package:mango/components/noanimation_router.dart';
-import 'package:mango/details.dart';
+import 'package:karaage/api/mangas.dart';
+import 'package:karaage/api/models.dart';
+import 'package:karaage/components/card.dart';
+import 'package:karaage/components/noanimation_router.dart';
+import 'package:karaage/details.dart';
 
 class MangasSearchResult extends StatefulWidget {
   const MangasSearchResult({super.key});
@@ -36,7 +36,7 @@ class _MangasSearchResultState extends State<MangasSearchResult> {
         /// Background image
         Positioned.fill(
           child: Image.asset(
-            'assets/images/mangoBg.jpg', // Same background as HomePage
+            'assets/images/karaage_app_bg.jpg', // Same background as HomePage
             fit: BoxFit.cover,
           ),
         ),

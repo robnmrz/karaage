@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:karaage/db/app_database.dart';
-import 'package:karaage/home.dart';
+import 'package:karaage/layout.dart';
+import 'package:karaage/theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,8 +16,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Karaage Manga App',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: HomeScreen(),
+      theme: KaraageThemeData.defaultTheme,
+      home: RootScreen(),
     );
   }
 }

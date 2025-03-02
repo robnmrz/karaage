@@ -1,34 +1,34 @@
-import 'package:flutter/material.dart';
-import 'package:karaage/collection.dart';
-import 'package:karaage/components/bottombar.dart';
-// import 'package:karaage/details.dart';
-// import 'package:karaage/panels.dart';
-import 'package:karaage/search.dart';
-import 'package:karaage/settings.dart';
+import 'dart:ui';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+import 'package:flutter/material.dart';
+import 'package:karaage/screens/homepage.dart';
+import 'package:karaage/components/bottom_bar.dart';
+import 'package:karaage/screens/search.dart';
+import 'package:karaage/screens/profile.dart';
+
+class RootScreen extends StatefulWidget {
+  const RootScreen({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _RootScreenState createState() => _RootScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _RootScreenState extends State<RootScreen> {
   int _selectedIndex = 0;
 
   // Define a GlobalKey for HomePage's State
-  final GlobalKey<HomePageState> _homePageKey = GlobalKey<HomePageState>();
+  final GlobalKey<HomeScreenState> _homePageKey = GlobalKey<HomeScreenState>();
 
   // Pages List
-  List<Widget> _pages = [HomePage(), MangasSearchResult(), ProfilePage()];
+  List<Widget> _pages = [HomeScreen(), SearchScreen(), ProfileScreen()];
 
   @override
   void initState() {
     super.initState();
     _pages = [
-      HomePage(key: _homePageKey), // Assign the key here
-      MangasSearchResult(),
-      ProfilePage(),
+      HomeScreen(key: _homePageKey), // Assign the key here
+      SearchScreen(),
+      ProfileScreen(),
     ];
   }
 
@@ -46,11 +46,23 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        /// Background image covering the whole screen including bottom bar area
+        /// Background image
         Positioned.fill(
           child: Image.asset(
-            'assets/images/karaage_app_bg.jpg',
-            fit: BoxFit.cover, // Ensures full coverage
+            'assets/images/karaage_app_bg.jpg', // Same background as HomePage
+            fit: BoxFit.cover,
+          ),
+        ),
+
+        /// Apply blur effect over the background
+        Positioned.fill(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 30.0, sigmaY: 30.0),
+            child: Container(
+              color: Colors.black.withValues(
+                alpha: 0.5,
+              ), // Adjust opacity if needed
+            ),
           ),
         ),
 

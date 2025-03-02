@@ -6,23 +6,20 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget? leading;
   final List<Widget>? actions;
 
-  const GlassAppBar({
-    super.key,
-    this.title,
-    this.leading,
-    this.actions,
-  });
+  const GlassAppBar({super.key, this.title, this.leading, this.actions});
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: title != null
-          ? Text(title!, style: const TextStyle(color: Colors.white))
-          : null,
+      title:
+          title != null
+              ? Text(title!, style: const TextStyle(color: Colors.white))
+              : null,
       centerTitle: true,
       elevation: 0, // Remove shadow
       backgroundColor: Colors.transparent, // Transparent AppBar
-      leading: leading ??
+      leading:
+          leading ??
           IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
@@ -34,7 +31,9 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // Glass effect
           child: Container(
-            color: Colors.black.withValues(alpha: 0.3), // Semi-transparent background
+            color: Colors.black.withValues(
+              alpha: 0.3,
+            ), // Semi-transparent background
           ),
         ),
       ),

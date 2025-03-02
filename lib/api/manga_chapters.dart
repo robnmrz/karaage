@@ -1,37 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:karaage/api/constants.dart';
 import 'package:karaage/api/models.dart';
-import 'package:karaage/api/query.dart';
-
-// define the API base URL, referer and user agent for allmanga.to
-const String apiBaseUrl = "https://api.allanime.day/api";
-const String referer = "https://allmanga.to";
-const String agent =
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0";
-
-Future<List<String>> getChapterPagesUrls({
-  required String mangaId,
-  required String chapterString,
-}) async {
-  final response = await getChapterPages(
-    mangaId: mangaId,
-    chapterString: chapterString,
-  );
-
-  if (response.chapterPages.edges.isEmpty) {
-    return [];
-  }
-
-  try {
-    String urlBase = response.chapterPages.edges[0].pictureUrlHead!;
-    return response.chapterPages.edges[0].pictureUrls
-        .map((pic) => urlBase + pic.url)
-        .toList();
-  } catch (e) {
-    print('Panels URLs Exception: $e');
-    return [];
-  }
-}
+import 'package:karaage/api/queries.dart';
 
 Future<ChapterPagesResponse> getChapterPages({
   required String mangaId,
@@ -50,7 +21,7 @@ Future<ChapterPagesResponse> getChapterPages({
   try {
     final response = await http.get(
       apiUrl,
-      headers: {'Referer': referer, 'User-Agent': agent},
+      headers: {'Referer': apiReferer, 'User-Agent': apiAgent},
     );
     if (response.statusCode == 200) {
       return ChapterPagesResponse.fromJson(jsonDecode(response.body));
@@ -99,4 +70,29 @@ Uri generateChapterPagesUri({
   return Uri.parse(
     "$apiBaseUrl?variables=$encodedVariables&query=$encodedQuery",
   );
+}
+
+// get only urls of chapters
+Future<List<String>> getChapterPagesUrls({
+  required String mangaId,
+  required String chapterString,
+}) async {
+  final response = await getChapterPages(
+    mangaId: mangaId,
+    chapterString: chapterString,
+  );
+
+  if (response.chapterPages.edges.isEmpty) {
+    return [];
+  }
+
+  try {
+    String urlBase = response.chapterPages.edges[0].pictureUrlHead!;
+    return response.chapterPages.edges[0].pictureUrls
+        .map((pic) => urlBase + pic.url)
+        .toList();
+  } catch (e) {
+    print('Panels URLs Exception: $e');
+    return [];
+  }
 }

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:karaage/api/models.dart';
-import 'package:karaage/api/query.dart';
+import 'package:karaage/api/queries.dart';
 
 // define the API base URL, referer and user agent for allmanga.to
 const String apiBaseUrl = "https://api.allanime.day/api";
@@ -48,8 +48,3 @@ Uri generateMangaDetailsUri({required String id}) {
     "$apiBaseUrl?variables=$encodedVariables&query=$encodedQuery",
   );
 }
-
-// void main() async {
-//   MangaDetailsResponse response = await getMangaDetails(id: "bjKg6rj5rh539Wfey");
-//   print(response.rawData);
-// }

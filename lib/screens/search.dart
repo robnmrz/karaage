@@ -1,19 +1,19 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:karaage/api/mangas.dart';
+import 'package:karaage/api/manga_search.dart';
 import 'package:karaage/api/models.dart';
-import 'package:karaage/components/card.dart';
-import 'package:karaage/components/noanimation_router.dart';
-import 'package:karaage/details.dart';
+import 'package:karaage/components/manga_card.dart';
+import 'package:karaage/components/search_bar.dart';
+import 'package:karaage/screens/details.dart';
+import 'package:karaage/router/no_animation.dart';
 
-class MangasSearchResult extends StatefulWidget {
-  const MangasSearchResult({super.key});
+class SearchScreen extends StatefulWidget {
+  const SearchScreen({super.key});
 
   @override
-  State<MangasSearchResult> createState() => _MangasSearchResultState();
+  State<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _MangasSearchResultState extends State<MangasSearchResult> {
+class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   late Future<MangaSearchResponse>? _searchFuture;
 
@@ -33,71 +33,19 @@ class _MangasSearchResultState extends State<MangasSearchResult> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        /// Background image
-        Positioned.fill(
-          child: Image.asset(
-            'assets/images/karaage_app_bg.jpg', // Same background as HomePage
-            fit: BoxFit.cover,
-          ),
-        ),
-
-        /// Apply blur effect over the background
-        Positioned.fill(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 30.0, sigmaY: 30.0),
-            child: Container(
-              color: Colors.black.withValues(
-                alpha: 0.5,
-              ), // Adjust opacity if needed
-            ),
-          ),
-        ),
-
-        /// Main content inside Scaffold
+        /// Main Content Body
         Scaffold(
           extendBody: true,
-          backgroundColor:
-              Colors.transparent, // Make Scaffold blend with background
-          // appBar: AppBar(
-          //   title: Text("Search Mangas", style: const TextStyle(color: Colors.white)),
-          //   centerTitle: true,
-          //   backgroundColor: Colors.black.withValues(alpha: 0.3), // Slightly transparent
-          //   elevation: 0,
-          // ),
+          backgroundColor: Colors.transparent,
           body: Column(
             children: [
-              // Searchbar
+              // Search bar
               Padding(
                 padding: const EdgeInsets.only(top: 70, left: 10, right: 10),
-                child: TextField(
+                child: CustomSearchbar(
+                  hintText: "Search mangas...",
+                  icon: Icons.search,
                   controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: "Search mangas...",
-                    hintStyle: TextStyle(color: Colors.white60),
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.search, color: Colors.white60),
-                      onPressed:
-                          () => _onSearchSubmitted(_searchController.text),
-                    ),
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: const Color.fromARGB(255, 191, 105, 0),
-                        width: 1.0,
-                      ), // Color when focused
-                    ),
-                    filled: true,
-                    fillColor: Colors.black.withValues(
-                      alpha: 0.3,
-                    ), // Transparent input field
-                  ),
-                  style: TextStyle(color: Colors.white),
-                  cursorColor: Color.fromARGB(
-                    255,
-                    191,
-                    105,
-                    0,
-                  ), // Change cursor color to white
                   onSubmitted: _onSearchSubmitted,
                 ),
               ),
@@ -157,7 +105,7 @@ class _MangasSearchResultState extends State<MangasSearchResult> {
                               itemCount: mangaList.length,
                               itemBuilder: (context, index) {
                                 // MangaCard Component
-                                return CustomMangaCard(
+                                return MangaCard(
                                   imageUrl: mangaList[index].thumbnail,
                                   title: mangaList[index].name,
                                   lastChapterDate:
@@ -170,7 +118,7 @@ class _MangasSearchResultState extends State<MangasSearchResult> {
                                       context,
                                       NoAnimationPageRoute(
                                         builder:
-                                            (context) => MangaDetailsPage(
+                                            (context) => MangaDetailsScreen(
                                               mangaTitle: mangaList[index].name,
                                               mangaId: mangaList[index].id,
                                             ),

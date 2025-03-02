@@ -1,10 +1,7 @@
+import 'package:karaage/api/constants.dart';
 import 'package:karaage/api/models.dart';
 import 'package:path/path.dart' as p;
 import 'package:html_unescape/html_unescape.dart';
-
-const String thumbnailBaseUrl =
-    "https://wp.youtube-anime.com/aln.youtube-anime.com/";
-const String thumbnailBaseOther = "https://wp.youtube-anime.com";
 
 // Url explanation
 // https://wp.youtube-anime.com/aln.youtube-anime.com/mcovers/m_tbs/v9GG2hqJDaTA2HmmF/111.png?w=250 // this is adjustable size
@@ -83,10 +80,3 @@ List<String> formatChapterDoubles(List<double> numbers) {
     return number % 1 == 0 ? number.toInt().toString() : number.toString();
   }).toList();
 }
-
-// void main() {
-//   LastChapterDate lastChapterDate = LastChapterDate(
-//     sub: LastChapterDateMeta(year: 2025, month: 2, date: 22, hour: 11, minute: 41)
-//   );
-//   print(getTimeAgo(lastChapterDate));
-// }

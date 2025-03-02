@@ -2,27 +2,27 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:karaage/api/manga_details.dart';
 import 'package:karaage/api/models.dart';
-import 'package:karaage/components/appbar.dart';
-import 'package:karaage/components/chapter_list.dart';
-import 'package:karaage/components/info_section.dart';
+import 'package:karaage/components/app_bar.dart';
+import 'package:karaage/components/chapter_grid.dart';
+import 'package:karaage/components/manga_info.dart';
 import 'package:karaage/db/app_database.dart';
 
-class MangaDetailsPage extends StatefulWidget {
+class MangaDetailsScreen extends StatefulWidget {
   final String mangaId;
   final String mangaTitle;
 
-  const MangaDetailsPage({
+  const MangaDetailsScreen({
     super.key,
     required this.mangaId,
     required this.mangaTitle,
   });
 
   @override
-  State<MangaDetailsPage> createState() => _MangaDetailsPageState();
+  State<MangaDetailsScreen> createState() => _MangaDetailsScreenState();
 }
 
-class _MangaDetailsPageState extends State<MangaDetailsPage> {
-  late Future<MangaDetailsResponse> _mangaDetailsFuture;
+class _MangaDetailsScreenState extends State<MangaDetailsScreen> {
+  late Future<MangaDetailsResponse> _mangaFuture;
   List<List<dynamic>> _chapterGroups = [];
   int _selectedRangeIndex = 0;
   List<dynamic> sortedChapterList = [];
@@ -32,14 +32,14 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   @override
   void initState() {
     super.initState();
-    _mangaDetailsFuture = fetchMangaDetails();
+    _mangaFuture = fetchMangaDetails();
   }
 
   // Async function to fetch manga details
   Future<MangaDetailsResponse> fetchMangaDetails() async {
-    final mangaDetails = await getMangaDetails(id: widget.mangaId);
-    await db.insertManga(mangaDetails.manga); // Insert into DB
-    return mangaDetails;
+    final manga = await getMangaDetails(id: widget.mangaId);
+    await db.insertManga(manga.manga); // Insert into DB
+    return manga;
   }
 
   List<List<dynamic>> splitChaptersIntoRanges(
@@ -82,7 +82,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
       ),
 
       body: FutureBuilder<MangaDetailsResponse>(
-        future: _mangaDetailsFuture,
+        future: _mangaFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Stack(
@@ -174,19 +174,19 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
             );
           }
 
-          Manga mangaDetails = snapshot.data!.manga;
+          Manga manga = snapshot.data!.manga;
+
+          // Split chapters into ranges
           _chapterGroups = splitChaptersIntoRanges(
-            mangaDetails.availableChaptersDetail.sub,
-            50,
+            manga.availableChaptersDetail.sub,
+            MediaQuery.of(context).size.width > 600 ? 100 : 50,
           );
 
           return Stack(
             fit: StackFit.expand,
             children: [
               Image.network(
-                mangaDetails.hasBanner
-                    ? mangaDetails.banner!
-                    : mangaDetails.thumbnail,
+                manga.hasBanner ? manga.banner! : manga.thumbnail,
                 fit: BoxFit.fitHeight,
                 errorBuilder: (context, error, stackTrace) {
                   return Image.asset(
@@ -214,7 +214,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Manga info section
-                    MangaInfoSection(mangaDetails: mangaDetails),
+                    MangaInfoSection(manga: manga),
 
                     const SizedBox(height: 5),
 
@@ -225,8 +225,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
                     // Chapter grid Headline
                     Text(
-                      "${mangaDetails.availableChapters.sub} Chapters"
-                          .toUpperCase(),
+                      "${manga.availableChapters.sub} Chapters".toUpperCase(),
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -243,8 +242,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                         children: List.generate(_chapterGroups.length, (index) {
                           int start = index * 50;
                           int end =
-                              (start + 49 > mangaDetails.availableChapters.sub)
-                                  ? mangaDetails.availableChapters.sub
+                              (start + 49 > manga.availableChapters.sub)
+                                  ? manga.availableChapters.sub
                                   : start + 49;
 
                           return Row(
@@ -325,8 +324,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                               ? []
                               : _chapterGroups[_selectedRangeIndex],
                       chapters: sortedChapterList,
-                      mangaTitle: mangaDetails.name,
-                      mangaId: mangaDetails.id,
+                      mangaTitle: manga.name,
+                      mangaId: manga.id,
                     ),
                   ],
                 ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:karaage/components/noanimation_router.dart';
 import 'package:karaage/db/app_database.dart';
-import 'package:karaage/panels.dart';
+import 'package:karaage/screens/reader.dart';
+import 'package:karaage/router/no_animation.dart';
 
 class ChapterList extends StatefulWidget {
   final List<dynamic> chapters;
@@ -74,7 +74,7 @@ class _ChapterListState extends State<ChapterList> {
               context,
               NoAnimationPageRoute(
                 builder:
-                    (context) => MangaPanelsPage(
+                    (context) => ReaderScreen(
                       mangaId: widget.mangaId,
                       chapterString: widget.chaptersGroup[index],
                       chapters: widget.chapters,

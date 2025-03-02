@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:karaage/api/models.dart';
 import 'package:karaage/api/utils.dart';
 
-class CustomMangaCard extends StatelessWidget {
+class MangaCard extends StatelessWidget {
   final String imageUrl;
   final String title;
   final LastChapterDate lastChapterDate;
   final LastChapterInfo lastChapterInfo;
   final VoidCallback? onTap;
 
-  const CustomMangaCard({
+  const MangaCard({
     super.key,
     required this.imageUrl,
     required this.title,

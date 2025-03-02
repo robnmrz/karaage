@@ -3,10 +3,11 @@ import "dart:ui";
 import "package:flutter/material.dart";
 import "package:karaage/api/models.dart";
 import "package:karaage/db/app_database.dart";
+import "package:karaage/theme.dart";
 
 class MangaInfoSection extends StatefulWidget {
-  final Manga mangaDetails;
-  const MangaInfoSection({super.key, required this.mangaDetails});
+  final Manga manga;
+  const MangaInfoSection({super.key, required this.manga});
 
   @override
   _MangaInfoSectionState createState() => _MangaInfoSectionState();
@@ -27,7 +28,7 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
   /// Fetches bookmark status from database
   Future<void> _fetchBookmarkStatus() async {
     try {
-      Manga? manga = await db.getMangaById(widget.mangaDetails.id);
+      Manga? manga = await db.getMangaById(widget.manga.id);
       if (manga != null) {
         setState(() {
           _isBookmarked = manga.isFavorite;
@@ -49,7 +50,7 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
       });
 
       // Update Database entry with new fav status
-      await db.updateIsFavorite(widget.mangaDetails.id, newStatus);
+      await db.updateIsFavorite(widget.manga.id, newStatus);
     } catch (e) {
       print("Error updating bookmark status: $e");
     }
@@ -57,6 +58,8 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
 
   @override
   Widget build(BuildContext context) {
+    final themeColors = Theme.of(context).extension<KaraageColors>()!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -67,7 +70,7 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
             ClipRRect(
               borderRadius: BorderRadius.circular(5),
               child: Image.network(
-                widget.mangaDetails.thumbnail,
+                widget.manga.thumbnail,
                 width: 120,
                 height: 180,
                 fit: BoxFit.cover,
@@ -89,9 +92,9 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.mangaDetails.hasEnglishName
-                        ? widget.mangaDetails.englishName!
-                        : widget.mangaDetails.name,
+                    widget.manga.hasEnglishName
+                        ? widget.manga.englishName!
+                        : widget.manga.name,
                     style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
@@ -105,8 +108,8 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
 
                   // Authors
                   Text(
-                    widget.mangaDetails.authors.isNotEmpty
-                        ? widget.mangaDetails.authors[0].toUpperCase()
+                    widget.manga.authors.isNotEmpty
+                        ? widget.manga.authors[0].toUpperCase()
                         : "N/A",
                     style: TextStyle(color: Colors.white70, fontSize: 12),
                   ),
@@ -123,7 +126,7 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        widget.mangaDetails.status ?? "N/A",
+                        widget.manga.status ?? "N/A",
                         style: const TextStyle(color: Colors.white),
                       ),
                     ],
@@ -137,8 +140,8 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
                       const Icon(Icons.star, color: Colors.white70, size: 14),
                       const SizedBox(width: 6),
                       Text(
-                        widget.mangaDetails.averageScore.toString() != "null"
-                            ? "${widget.mangaDetails.averageScore} %"
+                        widget.manga.averageScore.toString() != "null"
+                            ? "${widget.manga.averageScore} %"
                             : "N/A",
                         style: const TextStyle(color: Colors.white),
                       ),
@@ -176,7 +179,9 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
                                   ? Icons.bookmark
                                   : Icons.bookmark_outline,
                               color:
-                                  _isBookmarked ? Colors.orange : Colors.white,
+                                  _isBookmarked
+                                      ? themeColors.accent
+                                      : themeColors.textSecondary,
                               size: 28,
                             ),
                           ),
@@ -197,7 +202,7 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
           height: 25,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: widget.mangaDetails.genres.length,
+            itemCount: widget.manga.genres.length,
             itemBuilder: (context, index) {
               return ClipRRect(
                 borderRadius: BorderRadius.circular(8),
@@ -216,8 +221,8 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
                     margin: const EdgeInsets.only(right: 8),
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                     child: Text(
-                      widget.mangaDetails.genres.isNotEmpty
-                          ? widget.mangaDetails.genres[index]
+                      widget.manga.genres.isNotEmpty
+                          ? widget.manga.genres[index]
                           : "N/A",
                       style: const TextStyle(color: Colors.white, fontSize: 10),
                     ),
@@ -248,7 +253,7 @@ class _MangaInfoSectionState extends State<MangaInfoSection> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.mangaDetails.description ?? "N/A",
+                  widget.manga.description ?? "N/A",
                   maxLines: _isExpanded ? null : 2,
                   overflow:
                       _isExpanded

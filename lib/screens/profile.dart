@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:karaage/components/switch.dart';
+import 'package:karaage/components/switch_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:ui';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfileScreenState extends State<ProfileScreen> {
   bool _showTotalChaptersRead = false;
 
   @override

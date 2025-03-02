@@ -16,20 +16,19 @@ class GlassBottomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20), // Blur effect
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
-          color: Colors.black.withValues(alpha: 0.4), // Glass effect background
-          padding: EdgeInsets.only(top: 10), // Add padding
+          color: Colors.black.withValues(alpha: 0.4),
+          padding: EdgeInsets.only(top: 10),
           child: BottomNavigationBar(
-            backgroundColor: Colors.transparent, // Transparent background
-            elevation: 0, // Remove shadow
+            backgroundColor: Colors.transparent,
+            elevation: 0,
             selectedItemColor: Colors.white,
             unselectedItemColor: Colors.white.withValues(alpha: 0.7),
             currentIndex: selectedIndex,
             onTap: onItemTapped,
             iconSize: 25,
-            type:
-                BottomNavigationBarType.fixed, // Ensures no shifting animation
+            type: BottomNavigationBarType.fixed,
             enableFeedback: false, // Disables the tap animation effect
             selectedFontSize: 10, // Prevents font from animating
             unselectedFontSize: 10, // Keeps it consistent
@@ -43,8 +42,6 @@ class GlassBottomNavigationBar extends StatelessWidget {
                 icon: Icon(Icons.settings),
                 label: 'Settings',
               ),
-              // BottomNavigationBarItem(icon: Icon(Icons.find_in_page_outlined), label: 'Details'),
-              // BottomNavigationBarItem(icon: Icon(Icons.menu_book_rounded), label: 'Panels'),
             ],
           ),
         ),

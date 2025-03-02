@@ -1,31 +1,33 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:karaage/api/panels.dart';
-import 'package:karaage/components/closebutton.dart';
-import 'package:karaage/components/floating_bottombar.dart';
-import 'package:karaage/components/noanimation_router.dart';
-import 'package:karaage/components/settings_button.dart';
+import 'package:karaage/api/manga_chapters.dart';
+import 'package:karaage/components/close_button.dart';
+import 'package:karaage/components/floating_bar.dart';
+import 'package:karaage/components/switch_layout_button.dart';
 import 'package:karaage/db/app_database.dart';
+import 'package:karaage/router/no_animation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class MangaPanelsPage extends StatefulWidget {
+class ReaderScreen extends StatefulWidget {
+  // final Manga manga;
   final String mangaId;
   final String chapterString;
   final List<dynamic> chapters; // List of chapters
 
-  const MangaPanelsPage({
+  const ReaderScreen({
     super.key,
+    // required this.manga,
     required this.mangaId,
     required this.chapterString,
     required this.chapters,
   });
 
   @override
-  _MangaPanelsPageState createState() => _MangaPanelsPageState();
+  _ReaderScreenState createState() => _ReaderScreenState();
 }
 
-class _MangaPanelsPageState extends State<MangaPanelsPage>
+class _ReaderScreenState extends State<ReaderScreen>
     with AutomaticKeepAliveClientMixin {
   late int currentIndex;
   late ScrollController _scrollController;
@@ -237,7 +239,7 @@ class _MangaPanelsPageState extends State<MangaPanelsPage>
                               context,
                               NoAnimationPageRoute(
                                 builder:
-                                    (context) => MangaPanelsPage(
+                                    (context) => ReaderScreen(
                                       mangaId: widget.mangaId,
                                       chapterString: getPreviousChapter(),
                                       chapters: widget.chapters,
@@ -252,7 +254,7 @@ class _MangaPanelsPageState extends State<MangaPanelsPage>
                               context,
                               NoAnimationPageRoute(
                                 builder:
-                                    (context) => MangaPanelsPage(
+                                    (context) => ReaderScreen(
                                       mangaId: widget.mangaId,
                                       chapterString: getNextChapter(),
                                       chapters: widget.chapters,

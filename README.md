@@ -1,6 +1,6 @@
 # 📖 Karaage - Manga Reader App
 
-![alt text](karaage_app_icon.png)
+<img src="karaage_app_icon.png" width="300">
 
 Karaage is a sleek and user-friendly manga reader app designed for manga enthusiasts from manga enthusiasts. With a simple intuitive interface, Karaage brings your favorite stories to life in the best way possible.
 This app scrapes the site [allmanga](https://allmanga.to/).

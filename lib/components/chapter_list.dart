@@ -54,8 +54,11 @@ class _ChapterListState extends State<ChapterList> {
       shrinkWrap: true, // Prevents infinite height error
       physics:
           const NeverScrollableScrollPhysics(), // Allows scrolling inside a parent SingleChildScrollView
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 5, // 5 elements per row
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount:
+            MediaQuery.of(context).size.width > 600
+                ? 10
+                : 5, // 5 elements per row
         crossAxisSpacing: 5,
         mainAxisSpacing: 5,
         childAspectRatio: 1.4, // Adjust this to fit the design

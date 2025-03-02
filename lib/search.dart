@@ -146,7 +146,10 @@ class _MangasSearchResultState extends State<MangasSearchResult> {
                               ),
                               gridDelegate:
                                   SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2, // Two cards per row
+                                    crossAxisCount:
+                                        MediaQuery.of(context).size.width > 600
+                                            ? 4
+                                            : 2, // Two cards per row
                                     crossAxisSpacing: 10,
                                     mainAxisSpacing: 10,
                                     childAspectRatio: 0.7, // Adjust height

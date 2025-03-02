@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:mango/api/panels.dart';
@@ -24,15 +25,19 @@ class MangaPanelsPage extends StatefulWidget {
   _MangaPanelsPageState createState() => _MangaPanelsPageState();
 }
 
-class _MangaPanelsPageState extends State<MangaPanelsPage> {
+class _MangaPanelsPageState extends State<MangaPanelsPage>
+    with AutomaticKeepAliveClientMixin {
   late int currentIndex;
   late ScrollController _scrollController;
-  bool _isBottomBarVisible = true;
+  final ValueNotifier<bool> _isBottomBarVisible = ValueNotifier(true);
   Future<List<String>>? _chapterPagesFuture; // Cache the future
   bool _chapterMarkedAsRead = false;
   bool _isHorizontalScroll = false;
 
   final AppDatabase db = AppDatabase.instance;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -53,27 +58,21 @@ class _MangaPanelsPageState extends State<MangaPanelsPage> {
   void _onScroll() {
     if (_scrollController.position.userScrollDirection ==
         ScrollDirection.reverse) {
-      if (_isBottomBarVisible) {
-        setState(() {
-          _isBottomBarVisible = false;
-        });
+      if (_isBottomBarVisible.value) {
+        _isBottomBarVisible.value = false; // No need to call setState
       }
     } else if (_scrollController.position.userScrollDirection ==
         ScrollDirection.forward) {
-      if (!_isBottomBarVisible) {
-        setState(() {
-          _isBottomBarVisible = true;
-        });
+      if (!_isBottomBarVisible.value) {
+        _isBottomBarVisible.value = true; // No need to call setState
       }
     }
 
-    // Check if the user has scrolled past half of the content
     if (!_chapterMarkedAsRead && _scrollController.hasClients) {
       final double maxScroll = _scrollController.position.maxScrollExtent;
       final double currentScroll = _scrollController.position.pixels;
 
       if (currentScroll > maxScroll / 2) {
-        // If scrolled past 50%
         _markChapterAsRead();
       }
     }
@@ -121,6 +120,7 @@ class _MangaPanelsPageState extends State<MangaPanelsPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     bool isFirstChapter = currentIndex == 0;
     bool isLastChapter = currentIndex == widget.chapters.length - 1;
 
@@ -157,68 +157,54 @@ class _MangaPanelsPageState extends State<MangaPanelsPage> {
               _isHorizontalScroll
                   ? PageView.builder(
                     reverse: true,
-                    controller: PageController(),
+                    controller: PageController(viewportFraction: 1),
                     scrollDirection: Axis.horizontal,
                     itemCount: imageUrls.length,
                     itemBuilder: (context, index) {
-                      return Image.network(
-                        imageUrls[index],
+                      return CachedNetworkImage(
+                        imageUrl: imageUrls[index],
                         width: MediaQuery.of(context).size.width,
                         fit: BoxFit.contain,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Container(
-                            height: MediaQuery.of(context).size.height,
-                            alignment: Alignment.center,
-                            child: const CircularProgressIndicator(),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            height: MediaQuery.of(context).size.height,
-                            alignment: Alignment.center,
-                            color: Colors.black,
-                            child: const Icon(
-                              Icons.error,
-                              color: Colors.red,
-                              size: 50,
+                        fadeInDuration: const Duration(milliseconds: 100),
+                        errorWidget:
+                            (context, url, error) => Container(
+                              height: MediaQuery.of(context).size.height,
+                              alignment: Alignment.center,
+                              color: Colors.black,
+                              child: const Icon(
+                                Icons.error,
+                                color: Colors.red,
+                                size: 50,
+                              ),
                             ),
-                          );
-                        },
                       );
                     },
                   )
-                  : ListView.builder(
+                  : SingleChildScrollView(
+                    key: const PageStorageKey('manga_scroll_view'),
                     controller: _scrollController,
-                    padding: EdgeInsets.zero,
-                    itemCount: imageUrls.length,
-                    itemBuilder: (context, index) {
-                      return Image.network(
-                        imageUrls[index],
-                        width: MediaQuery.of(context).size.width,
-                        fit: BoxFit.fitWidth,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Container(
-                            height: MediaQuery.of(context).size.height,
-                            alignment: Alignment.center,
-                            child: const CircularProgressIndicator(),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            height: MediaQuery.of(context).size.height,
-                            alignment: Alignment.center,
-                            color: Colors.black,
-                            child: const Icon(
-                              Icons.error,
-                              color: Colors.red,
-                              size: 50,
-                            ),
-                          );
-                        },
-                      );
-                    },
+                    child: Column(
+                      children:
+                          imageUrls.map((imageUrl) {
+                            return CachedNetworkImage(
+                              fadeInDuration: const Duration(milliseconds: 100),
+                              imageUrl: imageUrl,
+                              width: MediaQuery.of(context).size.width,
+                              fit: BoxFit.fitWidth,
+                              errorWidget:
+                                  (context, url, error) => Container(
+                                    height: MediaQuery.of(context).size.height,
+                                    alignment: Alignment.center,
+                                    color: Colors.black,
+                                    child: const Icon(
+                                      Icons.error,
+                                      color: Colors.red,
+                                      size: 50,
+                                    ),
+                                  ),
+                            );
+                          }).toList(),
+                    ),
                   ),
 
               // Floating Close Button
@@ -235,47 +221,52 @@ class _MangaPanelsPageState extends State<MangaPanelsPage> {
                 bottom: 20,
                 left: 20,
                 right: 20,
-                child: AnimatedOpacity(
-                  opacity: _isBottomBarVisible ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 100),
-                  child: FloatingBottomBar(
-                    isBackDisabled: isFirstChapter,
-                    isForwardDisabled: isLastChapter,
-                    chapterString: widget.chapterString,
-                    onBackPressed: () {
-                      if (!isFirstChapter) {
-                        Navigator.pushReplacement(
-                          context,
-                          NoAnimationPageRoute(
-                            builder:
-                                (context) => MangaPanelsPage(
-                                  mangaId: widget.mangaId,
-                                  chapterString: getPreviousChapter(),
-                                  chapters: widget.chapters,
-                                ),
-                          ),
-                        );
-                      }
-                    },
-                    onForwardPressed: () {
-                      if (!isLastChapter) {
-                        Navigator.pushReplacement(
-                          context,
-                          NoAnimationPageRoute(
-                            builder:
-                                (context) => MangaPanelsPage(
-                                  mangaId: widget.mangaId,
-                                  chapterString: getNextChapter(),
-                                  chapters: widget.chapters,
-                                ),
-                          ),
-                        );
-                      }
-                    },
-                    onSearchPressed: () {
-                      print("Search Pressed");
-                    },
-                  ),
+                child: ValueListenableBuilder<bool>(
+                  valueListenable: _isBottomBarVisible,
+                  builder: (context, isVisible, child) {
+                    return AnimatedOpacity(
+                      opacity: isVisible ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 100),
+                      child: FloatingBottomBar(
+                        isBackDisabled: isFirstChapter,
+                        isForwardDisabled: isLastChapter,
+                        chapterString: widget.chapterString,
+                        onBackPressed: () {
+                          if (!isFirstChapter) {
+                            Navigator.pushReplacement(
+                              context,
+                              NoAnimationPageRoute(
+                                builder:
+                                    (context) => MangaPanelsPage(
+                                      mangaId: widget.mangaId,
+                                      chapterString: getPreviousChapter(),
+                                      chapters: widget.chapters,
+                                    ),
+                              ),
+                            );
+                          }
+                        },
+                        onForwardPressed: () {
+                          if (!isLastChapter) {
+                            Navigator.pushReplacement(
+                              context,
+                              NoAnimationPageRoute(
+                                builder:
+                                    (context) => MangaPanelsPage(
+                                      mangaId: widget.mangaId,
+                                      chapterString: getNextChapter(),
+                                      chapters: widget.chapters,
+                                    ),
+                              ),
+                            );
+                          }
+                        },
+                        onSearchPressed: () {
+                          print("Search Pressed");
+                        },
+                      ),
+                    );
+                  },
                 ),
               ),
             ],

@@ -5,7 +5,7 @@ import 'package:karaage/components/search_bar.dart';
 import 'package:karaage/db/app_database.dart';
 import 'package:karaage/screens/details.dart';
 import 'package:karaage/router/no_animation.dart';
-import 'package:karaage/screens/settings.dart';
+import 'package:karaage/screens/profile.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
